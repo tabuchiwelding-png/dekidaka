@@ -286,7 +286,7 @@ input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink);}
   </div>
   <div class="tb-meta">
     <div class="tb-field"><span class="tb-k">NO.</span><span class="tb-v">DKDK-001</span></div>
-    <div class="tb-field"><span class="tb-k">REV</span><span class="tb-v">v<span id="verNum">3</span></span></div>
+    <div class="tb-field"><span class="tb-k">REV</span><span class="tb-v">v<span id="verNum">4</span></span></div>
     <div class="tb-field"><span class="tb-k">通信</span><span class="tb-v"><span class="dot" id="connDot"></span><span id="connText">接続中</span></span></div>
   </div>
 </header>
@@ -353,7 +353,7 @@ input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink);}
         <b>粗利</b> ＝ ベース売上 − 人件費 −（材料・外注）。
       </div>
     </div>
-    <div class="app-foot">DEKIDAKA TERMINAL — REV.<span id="verNum2">3</span></div>
+    <div class="app-foot">DEKIDAKA TERMINAL — REV.<span id="verNum2">4</span></div>
   </section>
 
 </main>
@@ -374,9 +374,9 @@ input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink);}
 /* ===================================================================
    CONFIG
 =================================================================== */
-const APP_VERSION = 3;
+const APP_VERSION = 4;
 const API_BASE = "https://dekidaka.tabuchi-welding.workers.dev";
-const CACHE_KEY = "dekidaka_cache_v3";
+const CACHE_KEY = "dekidaka_cache_v4";
 
 /* ===================================================================
    STATE
@@ -447,6 +447,17 @@ function chargeRate(wage, insured){ const ins=insured?num(state.settings.insuran
 
 function calcPayroll(member, normalHours, otHours){
   const site=memberSite(member);
+  const sales=Math.round((normalHours+otHours)*num(site.unit_price));
+  // 役員：労基法の労働者ではないため残業割増の対象外。報酬は出勤に関わらず固定月額。
+  if(member.employment==='executive'){
+    const monthlyPay=Math.max(0,Math.round(num(member.monthly_pay)));
+    const insRate=num(state.settings.insurance_rate)/100;
+    const welfare=member.insured?Math.round(monthlyPay*insRate):0;
+    const laborCost=monthlyPay+welfare;
+    return { normalHours, otHours, normalPay:monthlyPay, otPay:0, basePay:monthlyPay,
+      welfare, laborCost, sales, profit:sales-laborCost, unitPrice:num(site.unit_price), otMult:1,
+      isExecutive:true, monthlyPay };
+  }
   const wage=num(member.hourly_wage);
   const otMult=num(site.overtime_mult,1.25);
   const insRate=num(state.settings.insurance_rate)/100;
@@ -457,10 +468,9 @@ function calcPayroll(member, normalHours, otHours){
   let welfare=0;
   if(member.insured) welfare=(otSocial?basePay:normalPay)*insRate;
   const laborCost=Math.round(basePay)+Math.round(welfare);
-  const sales=Math.round((normalHours+otHours)*num(site.unit_price));
   return { normalHours, otHours, normalPay:Math.round(normalPay), otPay:Math.round(otPay),
     basePay:Math.round(basePay), welfare:Math.round(welfare), laborCost, sales, profit:sales-laborCost,
-    unitPrice:num(site.unit_price), otMult };
+    unitPrice:num(site.unit_price), otMult, isExecutive:false };
 }
 function calcJob(job, logs){
   let laborRaw=0, insuredLabor=0, hours=0;
@@ -572,7 +582,7 @@ async function renderHome(){
       const maxS=Math.max(...per.map(p=>p.sales),1);
       for(const p of per.sort((a,b)=>b.sales-a.sales)){
         h+=`<div class="bar-item">
-          <div class="bar-head"><span class="bn">${esc(p.name)} <span class="dim tiny">${p.days}日 / ${hrs(p.normalHours+p.otHours)}</span></span>
+          <div class="bar-head"><span class="bn">${esc(p.name)}${p.isExecutive?' <span class="chip ft" style="font-size:9px;padding:0 5px">役員</span>':''} <span class="dim tiny">${p.days}日 / ${hrs(p.normalHours+p.otHours)}</span></span>
             <span class="bv">売上 ${yen(p.sales)}</span></div>
           <div class="bar-track"><div class="bar-fill profit" style="width:${p.sales/maxS*100}%"></div></div>
           <div class="tiny dim" style="margin-top:4px;display:flex;justify-content:space-between">
@@ -923,7 +933,7 @@ async function renderSum(){
     else{ for(const p of per.sort((a,b)=>b.sales-a.sales)){
       h+=`<div style="padding:11px 0;border-bottom:1px solid var(--line-soft)">
         <div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline">
-          <span style="font-weight:600">${esc(p.m.name)}${p.m.employment==='fulltime'?' <span class="chip ft">正社員</span>':''}${p.m.insured?'':' <span class="chip">社保外</span>'}</span>
+          <span style="font-weight:600">${esc(p.m.name)}${p.m.employment==='fulltime'?' <span class="chip ft">正社員</span>':(p.m.employment==='executive'?' <span class="chip ft">役員</span>':'')}${p.m.insured?'':' <span class="chip">社保外</span>'}</span>
           <span class="num small" style="color:var(--${p.profit>=0?'verdigris':'rust'});font-weight:700">粗利 ${yen(p.profit)}</span></div>
         <div class="tiny dim" style="margin-top:4px">${p.days}日 / 平常${p.normalHours}h 残業${p.otHours}h ・ 単価¥${p.unitPrice.toLocaleString()}</div>
         <div class="tiny" style="margin-top:3px;display:flex;justify-content:space-between"><span class="dim">売上 ${yen(p.sales)}</span><span class="dim">人件費 ${yen(p.laborCost)}（社保 ${yen(p.welfare)}）</span></div></div>`;
@@ -994,37 +1004,56 @@ function renderMembers(){
   if(state.members.length===0){ body.innerHTML=emptyHTML("people","作業者が未登録です。上のボタンから追加してください"); return; }
   let h=`<div class="panel" style="padding:8px var(--pad)">`;
   for(const m of state.members){
-    const rate=chargeRate(num(m.hourly_wage),m.insured); const inactive=m.active===0; const site=memberSite(m);
+    const isExec=m.employment==='executive';
+    const rate=isExec?0:chargeRate(num(m.hourly_wage),m.insured);
+    const inactive=m.active===0; const site=memberSite(m);
+    const empChip = m.employment==='fulltime' ? ' <span class="chip ft">正社員</span>' : (isExec ? ' <span class="chip ft">役員</span>' : '');
+    const subLine = isExec
+      ? `${esc(site.name||'現場未設定')} ・ 役員報酬 ${yen(m.monthly_pay)}（固定・月額）`
+      : `${esc(site.name||'現場未設定')} ・ 時給 ${yen(m.hourly_wage)} ・ 人時原価 ${yen(rate)}`;
     h+=`<div class="line-item" ${inactive?'style="opacity:.5"':''}>
-      <div class="li-main"><div class="li-title">${esc(m.name)}${m.employment==='fulltime'?' <span class="chip ft">正社員</span>':''}${m.insured?'':' <span class="chip">社保外</span>'}${inactive?' <span class="chip">無効</span>':''}</div>
-        <div class="li-sub">${esc(site.name||'現場未設定')} ・ 時給 ${yen(m.hourly_wage)} ・ 人時原価 ${yen(rate)}</div></div>
+      <div class="li-main"><div class="li-title">${esc(m.name)}${empChip}${m.insured?'':' <span class="chip">社保外</span>'}${inactive?' <span class="chip">無効</span>':''}</div>
+        <div class="li-sub">${subLine}</div></div>
       <button class="btn btn-ghost btn-sm" onclick='openMemberEditor(${JSON.stringify(m).replace(/'/g,"&#39;")})'>編集</button></div>`;
   }
   h+=`</div>`; body.innerHTML=h;
 }
 function openMemberEditor(member){
-  const m=member||{name:"",hourly_wage:"",insured:1,active:1,employment:"parttime",site_id:(state.sites[0]?state.sites[0].id:0)};
+  const m=member||{name:"",hourly_wage:"",monthly_pay:"",insured:1,active:1,employment:"parttime",site_id:(state.sites[0]?state.sites[0].id:0)};
   const isEdit=!!(member&&member.id);
+  const isExec=m.employment==='executive';
   let h=`<div class="modal-grip"></div><div class="modal-h">${isEdit?"作業者を編集":"作業者を追加"}</div>
     <div class="field"><label>名前 <span style="color:var(--rust)">*</span></label><input type="text" class="input" id="meName" value="${esc(m.name)}" placeholder="例：佐藤"></div>
-    <div class="field"><label>時給（手入力・編集可）</label><div class="with-suffix"><input type="number" class="input num" id="meWage" inputmode="numeric" value="${esc(m.hourly_wage)}" placeholder="例：2000"><span class="sfx">円</span></div>
+    <div class="field"><label>雇用区分</label><select class="select" id="meEmp" onchange="onMeEmpChange()">
+      <option value="fulltime" ${m.employment==='fulltime'?"selected":""}>正社員</option>
+      <option value="parttime" ${(m.employment!=='fulltime'&&!isExec)?"selected":""}>その他</option>
+      <option value="executive" ${isExec?"selected":""}>役員</option></select></div>
+    <div class="field" id="meWageWrap" style="${isExec?'display:none':''}"><label>時給（手入力・編集可）</label><div class="with-suffix"><input type="number" class="input num" id="meWage" inputmode="numeric" value="${esc(m.hourly_wage)}" placeholder="例：2000"><span class="sfx">円</span></div>
       <div class="tiny dim" style="margin-top:6px">最低賃金の目安：${yen(state.settings.min_wage)}</div></div>
-    <div class="field"><label>所属現場（人工単価）</label><select class="select" id="meSite">${state.sites.map(s=>`<option value="${s.id}" ${m.site_id==s.id?"selected":""}>${esc(s.name)}（${yen(s.unit_price)}）</option>`).join("")}</select></div>
-    <div class="row2">
-      <div class="field"><label>雇用区分</label><select class="select" id="meEmp"><option value="fulltime" ${m.employment==='fulltime'?"selected":""}>正社員</option><option value="parttime" ${m.employment!=='fulltime'?"selected":""}>その他</option></select></div>
-      <div class="field"><label>社会保険</label><select class="select" id="meInsured"><option value="1" ${m.insured?"selected":""}>対象</option><option value="0" ${!m.insured?"selected":""}>対象外</option></select></div></div>`;
+    <div class="field" id="meMonthlyWrap" style="${isExec?'':'display:none'}"><label>役員報酬（固定・月額）</label><div class="with-suffix"><input type="number" class="input num" id="meMonthly" inputmode="numeric" value="${esc(m.monthly_pay)}" placeholder="例：400000"><span class="sfx">円</span></div>
+      <div class="tiny dim" style="margin-top:6px">出勤日数・時間に関わらず固定。労基法は適用されず残業割増の対象外です。</div></div>
+    <div class="field"><label>所属現場（人工単価）</label><select class="select" id="meSite">${state.sites.map(s=>`<option value="${s.id}" ${m.site_id==s.id?"selected":""}>${esc(s.name)}（${yen(s.unit_price)}）</option>`).join("")}</select>
+      <div class="tiny dim" style="margin-top:6px">役員でも売上（人工）は他の作業者と同じ計算です</div></div>
+    <div class="field"><label>社会保険</label><select class="select" id="meInsured"><option value="1" ${m.insured?"selected":""}>対象</option><option value="0" ${!m.insured?"selected":""}>対象外</option></select></div>`;
   if(isEdit) h+=`<div class="field"><label>状態</label><select class="select" id="meActive"><option value="1" ${m.active!==0?"selected":""}>有効</option><option value="0" ${m.active===0?"selected":""}>無効（一覧から隠す）</option></select></div>`;
   h+=`<button class="btn btn-primary btn-block" id="meSave" onclick="saveMember(${isEdit?m.id:'null'})">${isEdit?"更新する":"追加する"}</button>`;
   if(isEdit) h+=`<button class="btn btn-danger btn-block" style="margin-top:10px" onclick="delMember(${m.id})">削除</button>`;
   h+=`<button class="btn btn-ghost btn-block" style="margin-top:10px" onclick="closeModal()">キャンセル</button>`;
   openModalRaw(h);
 }
+function onMeEmpChange(){
+  const isExec=$("meEmp").value==='executive';
+  $("meWageWrap").style.display=isExec?'none':'';
+  $("meMonthlyWrap").style.display=isExec?'':'none';
+}
 async function saveMember(id){
   const name=$("meName").value.trim(); if(!name){ toast("名前を入力してください","err"); return; }
+  const employment=$("meEmp").value;
   const wage=num($("meWage").value);
-  if(wage>0 && wage<num(state.settings.min_wage)){ if(!confirm("時給が最低賃金の目安（"+yen(state.settings.min_wage)+"）を下回っています。保存しますか？")) return; }
+  const monthlyPay=num($("meMonthly")?$("meMonthly").value:0);
+  if(employment!=='executive' && wage>0 && wage<num(state.settings.min_wage)){ if(!confirm("時給が最低賃金の目安（"+yen(state.settings.min_wage)+"）を下回っています。保存しますか？")) return; }
   const btn=$("meSave"); btn.disabled=true; btn.textContent="保存中…";
-  const p={name,hourly_wage:wage,insured:Number($("meInsured").value)?1:0,employment:$("meEmp").value,site_id:Number($("meSite").value)};
+  const p={name,hourly_wage:wage,monthly_pay:monthlyPay,insured:Number($("meInsured").value)?1:0,employment,site_id:Number($("meSite").value)};
   if(id){ p.id=id; p.active=$("meActive")?Number($("meActive").value):1; }
   try{ await api("members.save",p); const m=await api("members.list"); state.members=m.members||[]; rebuildMembersMap(); toast(id?"更新しました":"追加しました","ok"); closeModal(); renderMembers(); }
   catch(e){ toast(e.message,"err"); btn.disabled=false; btn.textContent=id?"更新する":"追加する"; }
