@@ -7,99 +7,40 @@
 <title>出来高ターミナル</title>
 <style>
 /* ===================================================================
-   CSS VARIABLES  （色・サイズ・フォントを最初に全定義）
+   CSS VARIABLES
 =================================================================== */
 :root{
-  /* 主題：溶接＝鋼・図面・アーク光・焼き色 */
-  --bg:#0f1722;            /* 計器盤の暗い鋼 */
-  --bg-2:#15202e;
-  --surface:#1b2735;       /* カード面 */
-  --surface-2:#22303f;     /* 内側パネル */
-  --line:#2c3c4d;          /* 罫線 */
-  --line-soft:#243140;
-  --ink:#eef3f8;           /* 主要文字 */
-  --ink-sub:#9fb0c0;       /* 副次文字 */
-  --ink-dim:#6c7d8d;       /* かすれ文字 */
-
-  --steel:#2f80ed;         /* 鋼の青（プライマリ・アーク光） */
-  --steel-dark:#1d5fc0;
-  --steel-soft:rgba(47,128,237,.14);
-
-  --profit:#22c08b;        /* 利益（緑） */
-  --profit-soft:rgba(34,192,139,.14);
-  --loss:#f0556b;          /* 損失（赤） */
-  --loss-soft:rgba(240,85,107,.14);
-  --spark:#f5a623;         /* 火花・注意（アンバー） */
-  --spark-soft:rgba(245,166,35,.14);
-
-  /* 焼き色＝案件ステータスの進行 */
-  --t-estimate:#8595a5;    /* 見積 */
-  --t-progress:#f5a623;    /* 進行（火が入る） */
-  --t-done:#2f80ed;        /* 完成（青に焼ける） */
-  --t-billed:#9b7cff;      /* 請求（紫） */
-  --t-paid:#22c08b;        /* 入金（完了） */
-
+  --bg:#0f1722; --bg-2:#15202e; --surface:#1b2735; --surface-2:#22303f;
+  --line:#2c3c4d; --line-soft:#243140;
+  --ink:#eef3f8; --ink-sub:#9fb0c0; --ink-dim:#6c7d8d;
+  --steel:#2f80ed; --steel-dark:#1d5fc0; --steel-soft:rgba(47,128,237,.14);
+  --profit:#22c08b; --profit-soft:rgba(34,192,139,.14);
+  --loss:#f0556b; --loss-soft:rgba(240,85,107,.14);
+  --spark:#f5a623; --spark-soft:rgba(245,166,35,.14);
+  --t-estimate:#8595a5; --t-progress:#f5a623; --t-done:#2f80ed; --t-billed:#9b7cff; --t-paid:#22c08b;
   --font:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;
   --mono:ui-monospace,"SF Mono","Roboto Mono",Menlo,Consolas,monospace;
-
-  --fs-xs:11px;
-  --fs-sm:13px;
-  --fs:15px;
-  --fs-lg:17px;
-  --fs-xl:21px;
-  --fs-num:30px;
-
-  --tap:44px;
-  --radius:12px;
-  --radius-sm:9px;
-  --gap:12px;
-  --pad:16px;
-
+  --fs-xs:11px; --fs-sm:13px; --fs:15px; --fs-lg:17px; --fs-xl:21px; --fs-num:30px;
+  --tap:44px; --radius:12px; --radius-sm:9px; --gap:12px; --pad:16px;
   --shadow:0 6px 22px rgba(0,0,0,.35);
-  --safe-b:env(safe-area-inset-bottom,0px);
-  --safe-t:env(safe-area-inset-top,0px);
+  --safe-b:env(safe-area-inset-bottom,0px); --safe-t:env(safe-area-inset-top,0px);
 }
-
-/* ===================================================================
-   BASE
-=================================================================== */
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;padding:0;}
-body{
-  font-family:var(--font);
-  font-size:var(--fs);
-  color:var(--ink);
-  background:var(--bg);
-  line-height:1.5;
-  overflow-x:hidden;
-  -webkit-text-size-adjust:100%;
-}
+body{font-family:var(--font);font-size:var(--fs);color:var(--ink);background:var(--bg);line-height:1.5;overflow-x:hidden;-webkit-text-size-adjust:100%;}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
-input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink);} /* 16px=iOS自動ズーム防止 */
-.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;}
+input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink);}
 .num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.3px;}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
 
-/* ===================================================================
-   HEADER
-=================================================================== */
-.app-header{
-  position:sticky;top:0;z-index:50;
-  padding:calc(var(--safe-t) + 10px) var(--pad) 10px;
-  background:linear-gradient(180deg,#101a26 0%,rgba(16,26,38,.96) 100%);
-  border-bottom:1px solid var(--line);
-  backdrop-filter:blur(8px);
-}
+/* HEADER */
+.app-header{position:sticky;top:0;z-index:50;padding:calc(var(--safe-t) + 10px) var(--pad) 10px;
+  background:linear-gradient(180deg,#101a26 0%,rgba(16,26,38,.96) 100%);border-bottom:1px solid var(--line);backdrop-filter:blur(8px);}
 .hd-row{display:flex;align-items:center;gap:10px;}
 .hd-brand{display:flex;align-items:center;gap:9px;min-width:0;}
-.hd-spark{
-  width:26px;height:26px;flex:none;border-radius:7px;
-  background:radial-gradient(circle at 50% 35%,#bfe0ff 0%,var(--steel) 45%,var(--steel-dark) 100%);
-  box-shadow:0 0 12px var(--steel-soft);
-  position:relative;
-}
-.hd-spark::after{content:"";position:absolute;inset:0;border-radius:7px;
-  background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,.5) 50%,transparent 60%);}
+.hd-spark{width:26px;height:26px;flex:none;border-radius:7px;
+  background:radial-gradient(circle at 50% 35%,#bfe0ff 0%,var(--steel) 45%,var(--steel-dark) 100%);box-shadow:0 0 12px var(--steel-soft);position:relative;}
+.hd-spark::after{content:"";position:absolute;inset:0;border-radius:7px;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,.5) 50%,transparent 60%);}
 .hd-title{font-size:var(--fs-lg);font-weight:700;letter-spacing:.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .hd-sub{font-size:var(--fs-xs);color:var(--ink-dim);margin-top:-2px;letter-spacing:.4px;}
 .hd-status{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:var(--fs-xs);color:var(--ink-sub);flex:none;}
@@ -109,60 +50,34 @@ input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink);} /* 1
 .dot.busy{background:var(--spark);animation:pulse 1s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* ===================================================================
-   LAYOUT
-=================================================================== */
+/* LAYOUT */
 .main{padding:var(--pad);padding-bottom:calc(var(--tap) + 34px + var(--safe-b) + 20px);max-width:760px;margin:0 auto;}
 .view{display:none;}
 .view.active{display:block;animation:fade .25s ease;}
 @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 
-/* ===================================================================
-   TAB BAR
-=================================================================== */
-.tabbar{
-  position:fixed;left:0;right:0;bottom:0;z-index:60;
-  display:flex;
-  padding:6px 6px calc(6px + var(--safe-b));
-  background:linear-gradient(180deg,rgba(16,26,38,.92),#0c141d);
-  border-top:1px solid var(--line);
-  backdrop-filter:blur(10px);
-}
-.tab{
-  flex:1;min-height:var(--tap);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-  color:var(--ink-dim);font-size:10px;letter-spacing:.3px;border-radius:10px;
-  transition:color .15s,background .15s;
-}
-.tab .ic{font-size:19px;line-height:1;}
+/* TAB BAR */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;padding:6px 4px calc(6px + var(--safe-b));
+  background:linear-gradient(180deg,rgba(16,26,38,.92),#0c141d);border-top:1px solid var(--line);backdrop-filter:blur(10px);}
+.tab{flex:1;min-height:var(--tap);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  color:var(--ink-dim);font-size:10px;letter-spacing:.2px;border-radius:10px;transition:color .15s,background .15s;}
+.tab .ic{font-size:18px;line-height:1;}
 .tab.active{color:var(--steel);background:var(--steel-soft);}
 .tab:active{transform:scale(.94);}
 
-/* ===================================================================
-   CARDS / PANELS
-=================================================================== */
-.card{
-  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-  padding:var(--pad);margin-bottom:var(--gap);
-}
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:var(--pad);margin-bottom:var(--gap);}
 .card-tap{transition:transform .12s,border-color .15s;}
 .card-tap:active{transform:scale(.985);border-color:var(--steel);}
 .sect-h{display:flex;align-items:center;gap:8px;margin:0 0 12px;}
 .sect-h h2{font-size:var(--fs);font-weight:700;margin:0;letter-spacing:.4px;}
 .sect-h .eyebrow{font-size:var(--fs-xs);color:var(--steel);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;}
-.muted{color:var(--ink-sub);}
-.dim{color:var(--ink-dim);}
-.tiny{font-size:var(--fs-xs);}
-.small{font-size:var(--fs-sm);}
+.sect-h .right{margin-left:auto;}
+.muted{color:var(--ink-sub);} .dim{color:var(--ink-dim);} .tiny{font-size:var(--fs-xs);} .small{font-size:var(--fs-sm);}
 
-/* ===================================================================
-   STAT TILES（ダッシュ計器）
-=================================================================== */
+/* STAT */
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);}
-.stat{
-  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-  padding:14px;position:relative;overflow:hidden;
-}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px;position:relative;overflow:hidden;}
 .stat.span2{grid-column:span 2;}
 .stat .lab{font-size:var(--fs-xs);color:var(--ink-sub);letter-spacing:.5px;display:flex;align-items:center;gap:5px;}
 .stat .big{font-family:var(--mono);font-size:var(--fs-num);font-weight:700;line-height:1.1;margin-top:6px;letter-spacing:-1px;}
@@ -172,30 +87,18 @@ input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink);} /* 1
 .stat.good .big{color:var(--profit);} .stat.good .edge{background:var(--profit);}
 .stat.bad .big{color:var(--loss);} .stat.bad .edge{background:var(--loss);}
 
-/* ===================================================================
-   採算メーター（SIGNATURE）
-=================================================================== */
+/* METER */
 .meter{margin-top:10px;}
-.meter-track{
-  position:relative;height:22px;border-radius:6px;overflow:hidden;
-  background:var(--surface-2);border:1px solid var(--line);
-}
+.meter-track{position:relative;height:22px;border-radius:6px;overflow:hidden;background:var(--surface-2);border:1px solid var(--line);}
 .meter-zero{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--ink-dim);z-index:2;}
 .meter-fill{position:absolute;top:0;bottom:0;}
 .meter-fill.pos{left:50%;background:linear-gradient(90deg,var(--steel),var(--profit));}
 .meter-fill.neg{right:50%;background:linear-gradient(270deg,var(--spark),var(--loss));}
-.meter-val{
-  position:absolute;top:50%;transform:translateY(-50%);z-index:3;
-  font-family:var(--mono);font-size:var(--fs-xs);font-weight:700;padding:0 6px;color:#fff;
-  text-shadow:0 1px 2px rgba(0,0,0,.5);
-}
+.meter-val{position:absolute;top:50%;transform:translateY(-50%);z-index:3;font-family:var(--mono);font-size:var(--fs-xs);font-weight:700;padding:0 6px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5);}
 .meter-scale{display:flex;justify-content:space-between;font-size:9px;color:var(--ink-dim);margin-top:3px;font-family:var(--mono);}
 
-/* ===================================================================
-   BADGES（焼き色ステータス）
-=================================================================== */
-.badge{display:inline-flex;align-items:center;gap:5px;font-size:var(--fs-xs);font-weight:700;
-  padding:3px 9px;border-radius:20px;letter-spacing:.5px;white-space:nowrap;}
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:var(--fs-xs);font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.5px;white-space:nowrap;}
 .badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;}
 .bd-estimate{color:var(--t-estimate);background:rgba(133,149,165,.15);}
 .bd-progress{color:var(--t-progress);background:var(--spark-soft);}
@@ -203,9 +106,7 @@ input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink);} /* 1
 .bd-billed{color:var(--t-billed);background:rgba(155,124,255,.15);}
 .bd-paid{color:var(--t-paid);background:var(--profit-soft);}
 
-/* ===================================================================
-   JOB LIST ROW
-=================================================================== */
+/* JOB ROW */
 .job-row{padding:14px var(--pad);}
 .job-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:4px;}
 .job-name{font-weight:700;font-size:var(--fs);flex:1;min-width:0;}
@@ -214,9 +115,7 @@ input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink);} /* 1
 .job-figs .fk{color:var(--ink-dim);font-size:var(--fs-xs);}
 .job-figs .fv{font-family:var(--mono);font-weight:700;font-variant-numeric:tabular-nums;}
 
-/* ===================================================================
-   ROWS / KV
-=================================================================== */
+/* KV */
 .kv{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line-soft);gap:12px;}
 .kv:last-child{border-bottom:none;}
 .kv .k{color:var(--ink-sub);font-size:var(--fs-sm);}
@@ -226,34 +125,21 @@ input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink);} /* 1
 .kv.total .k{color:var(--ink);font-weight:700;font-size:var(--fs);}
 .kv.total .v{font-size:var(--fs-lg);}
 
-/* ===================================================================
-   FORM
-=================================================================== */
+/* FORM */
 .field{margin-bottom:14px;}
 .field label{display:block;font-size:var(--fs-sm);color:var(--ink-sub);margin-bottom:6px;font-weight:600;letter-spacing:.3px;}
-.input,.select,.textarea{
-  width:100%;min-height:var(--tap);
-  background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-sm);
-  padding:10px 12px;color:var(--ink);transition:border-color .15s;
-}
+.input,.select,.textarea{width:100%;min-height:var(--tap);background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;color:var(--ink);transition:border-color .15s;}
 .textarea{min-height:80px;resize:vertical;line-height:1.5;}
 .input:focus,.select:focus,.textarea:focus{outline:none;border-color:var(--steel);box-shadow:0 0 0 3px var(--steel-soft);}
 .input::placeholder,.textarea::placeholder{color:var(--ink-dim);}
-.select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%239fb0c0' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
-  background-repeat:no-repeat;background-position:right 12px center;padding-right:34px;}
+.select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%239fb0c0' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px;}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .with-suffix{position:relative;}
 .with-suffix .sfx{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--ink-dim);font-size:var(--fs-sm);pointer-events:none;}
 .with-suffix .input{padding-right:42px;}
 
-/* ===================================================================
-   BUTTONS
-=================================================================== */
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:7px;
-  min-height:var(--tap);padding:0 18px;border-radius:var(--radius-sm);
-  font-weight:700;font-size:var(--fs);letter-spacing:.4px;transition:transform .1s,opacity .15s,background .15s;
-}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:var(--tap);padding:0 18px;border-radius:var(--radius-sm);font-weight:700;font-size:var(--fs);letter-spacing:.4px;transition:transform .1s,opacity .15s,background .15s;}
 .btn:active{transform:scale(.96);}
 .btn:disabled{opacity:.5;pointer-events:none;}
 .btn-primary{background:linear-gradient(180deg,var(--steel),var(--steel-dark));color:#fff;box-shadow:0 3px 12px var(--steel-soft);}
@@ -261,36 +147,31 @@ input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink);} /* 1
 .btn-danger{background:var(--loss-soft);color:var(--loss);border:1px solid rgba(240,85,107,.3);}
 .btn-block{width:100%;}
 .btn-sm{min-height:36px;padding:0 12px;font-size:var(--fs-sm);}
-.btn-add{
-  width:100%;min-height:var(--tap);border:1.5px dashed var(--line);border-radius:var(--radius-sm);
-  color:var(--steel);font-weight:700;background:transparent;letter-spacing:.4px;
-}
+.btn-add{width:100%;min-height:var(--tap);border:1.5px dashed var(--line);border-radius:var(--radius-sm);color:var(--steel);font-weight:700;background:transparent;letter-spacing:.4px;}
 .btn-add:active{background:var(--steel-soft);}
-.btn-row{display:flex;gap:10px;}
-.btn-row .btn{flex:1;}
+.btn-row{display:flex;gap:10px;} .btn-row .btn{flex:1;}
 
-/* ===================================================================
-   MONTH NAV
-=================================================================== */
+/* SEGMENT */
+.segment{display:flex;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:4px;gap:4px;margin-bottom:var(--gap);}
+.segment button{flex:1;min-height:38px;border-radius:7px;font-weight:700;font-size:var(--fs-sm);color:var(--ink-sub);transition:background .15s,color .15s;}
+.segment button.on{background:var(--steel);color:#fff;}
+
+/* MONTH NAV */
 .mnav{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:var(--gap);}
-.mnav button{width:40px;height:40px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);
-  font-size:18px;color:var(--ink);display:flex;align-items:center;justify-content:center;}
+.mnav button{width:40px;height:40px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);font-size:18px;color:var(--ink);display:flex;align-items:center;justify-content:center;}
 .mnav button:active{transform:scale(.92);}
 .mnav .m-label{font-family:var(--mono);font-size:var(--fs-lg);font-weight:700;min-width:130px;text-align:center;}
 
-/* ===================================================================
-   BAR LIST（メンバー稼働など）
-=================================================================== */
+/* BAR */
 .bar-item{margin-bottom:12px;}
-.bar-head{display:flex;justify-content:space-between;font-size:var(--fs-sm);margin-bottom:5px;}
+.bar-head{display:flex;justify-content:space-between;font-size:var(--fs-sm);margin-bottom:5px;gap:8px;}
 .bar-head .bn{font-weight:600;}
 .bar-head .bv{font-family:var(--mono);color:var(--ink-sub);font-variant-numeric:tabular-nums;}
 .bar-track{height:9px;border-radius:5px;background:var(--surface-2);overflow:hidden;}
 .bar-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--steel-dark),var(--steel));}
+.bar-fill.profit{background:linear-gradient(90deg,#16996b,var(--profit));}
 
-/* ===================================================================
-   TASK / LOG ITEMS
-=================================================================== */
+/* LINE ITEM */
 .line-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line-soft);}
 .line-item:last-child{border-bottom:none;}
 .li-main{flex:1;min-width:0;}
@@ -299,45 +180,43 @@ input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink);} /* 1
 .li-val{font-family:var(--mono);font-weight:700;font-variant-numeric:tabular-nums;font-size:var(--fs-sm);}
 .li-x{width:30px;height:30px;flex:none;border-radius:8px;background:var(--surface-2);color:var(--ink-dim);font-size:15px;display:flex;align-items:center;justify-content:center;}
 .li-x:active{background:var(--loss-soft);color:var(--loss);}
+.chip{display:inline-block;font-size:var(--fs-xs);padding:2px 8px;border-radius:14px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink-sub);font-family:var(--font);}
+.chip.ft{color:var(--steel);border-color:rgba(47,128,237,.3);background:var(--steel-soft);}
 
-.chip{display:inline-block;font-size:var(--fs-xs);padding:3px 9px;border-radius:14px;background:var(--surface-2);
-  border:1px solid var(--line);color:var(--ink-sub);font-family:var(--mono);}
+/* ATTENDANCE GRID */
+.att-grid-head{display:grid;grid-template-columns:64px 1fr 1fr;gap:8px;padding:0 2px 8px;font-size:var(--fs-xs);color:var(--ink-dim);font-weight:700;letter-spacing:.5px;}
+.att-grid-head .c{text-align:center;}
+.att-row{display:grid;grid-template-columns:64px 1fr 1fr;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid var(--line-soft);}
+.att-row:last-child{border-bottom:none;}
+.att-row.weekend{background:rgba(245,166,35,.05);border-radius:6px;}
+.att-row.sun .ad{color:var(--loss);}
+.att-row.sat .ad{color:var(--steel);}
+.att-row .ad{font-family:var(--mono);font-size:var(--fs-sm);font-weight:700;text-align:center;}
+.att-row .ad small{display:block;font-size:9px;color:var(--ink-dim);font-weight:400;}
+.att-cell{min-height:40px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 8px;color:var(--ink);font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:center;width:100%;font-size:16px;}
+.att-cell:focus{outline:none;border-color:var(--steel);box-shadow:0 0 0 2px var(--steel-soft);}
+.att-cell.ot{border-color:rgba(245,166,35,.3);}
+.att-name-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line-soft);}
+.att-name-row:last-child{border-bottom:none;}
+.att-name-row .nm{font-weight:600;font-size:var(--fs-sm);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
-/* ===================================================================
-   EMPTY / LOADING / TOAST / MODAL
-=================================================================== */
+/* EMPTY / LOADING / TOAST / MODAL */
 .empty{text-align:center;padding:40px 20px;color:var(--ink-dim);}
 .empty .ee{font-size:34px;margin-bottom:10px;opacity:.5;}
 .empty .et{font-size:var(--fs-sm);}
-
 .loading{display:flex;align-items:center;justify-content:center;gap:10px;padding:30px;color:var(--ink-sub);font-size:var(--fs-sm);}
 .spin{width:18px;height:18px;border:2px solid var(--line);border-top-color:var(--steel);border-radius:50%;animation:rot .7s linear infinite;}
 @keyframes rot{to{transform:rotate(360deg)}}
-
-.toast{
-  position:fixed;left:50%;bottom:calc(var(--tap) + 46px + var(--safe-b));transform:translateX(-50%) translateY(20px);
-  z-index:200;max-width:90%;padding:12px 18px;border-radius:10px;font-size:var(--fs-sm);font-weight:600;
-  background:#243140;color:var(--ink);border:1px solid var(--line);box-shadow:var(--shadow);opacity:0;pointer-events:none;
-  transition:opacity .25s,transform .25s;text-align:center;
-}
+.toast{position:fixed;left:50%;bottom:calc(var(--tap) + 46px + var(--safe-b));transform:translateX(-50%) translateY(20px);z-index:200;max-width:90%;padding:12px 18px;border-radius:10px;font-size:var(--fs-sm);font-weight:600;background:#243140;color:var(--ink);border:1px solid var(--line);box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;text-align:center;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .toast.ok{border-color:rgba(34,192,139,.4);} .toast.ok::before{content:"✓ ";color:var(--profit);}
 .toast.err{border-color:rgba(240,85,107,.4);} .toast.err::before{content:"⚠ ";color:var(--loss);}
-
-.modal-bg{
-  position:fixed;inset:0;z-index:150;background:rgba(6,11,17,.7);backdrop-filter:blur(3px);
-  display:none;align-items:flex-end;justify-content:center;
-}
+.modal-bg{position:fixed;inset:0;z-index:150;background:rgba(6,11,17,.7);backdrop-filter:blur(3px);display:none;align-items:flex-end;justify-content:center;}
 .modal-bg.show{display:flex;animation:fade .2s;}
-.modal{
-  width:100%;max-width:760px;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  background:var(--bg-2);border:1px solid var(--line);border-radius:18px 18px 0 0;
-  padding:var(--pad);padding-bottom:calc(var(--pad) + var(--safe-b));animation:slideup .28s cubic-bezier(.2,.8,.2,1);
-}
+.modal{width:100%;max-width:760px;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--bg-2);border:1px solid var(--line);border-radius:18px 18px 0 0;padding:var(--pad);padding-bottom:calc(var(--pad) + var(--safe-b));animation:slideup .28s cubic-bezier(.2,.8,.2,1);}
 @keyframes slideup{from{transform:translateY(100%)}to{transform:none}}
 .modal-grip{width:40px;height:4px;border-radius:3px;background:var(--line);margin:0 auto 14px;}
 .modal-h{font-size:var(--fs-lg);font-weight:700;margin:0 0 16px;letter-spacing:.4px;}
-
 .divider{height:1px;background:var(--line);margin:16px 0;}
 .note-box{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;font-size:var(--fs-xs);color:var(--ink-sub);line-height:1.6;}
 .note-box b{color:var(--steel);}
@@ -346,7 +225,6 @@ input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink);} /* 1
 </head>
 <body>
 
-<!-- ================= HEADER ================= -->
 <header class="app-header">
   <div class="hd-row">
     <div class="hd-brand">
@@ -356,176 +234,115 @@ input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink);} /* 1
         <div class="hd-sub">合同会社田渕溶接工業</div>
       </div>
     </div>
-    <div class="hd-status">
-      <span class="dot" id="connDot"></span>
-      <span id="connText">接続中…</span>
-    </div>
+    <div class="hd-status"><span class="dot" id="connDot"></span><span id="connText">接続中…</span></div>
   </div>
 </header>
 
-<!-- ================= MAIN ================= -->
 <main class="main">
 
-  <!-- ---------- DASHBOARD ---------- -->
-  <section class="view active" id="view-dash">
+  <!-- ========== HOME (経営ダッシュ：人工ベース) ========== -->
+  <section class="view active" id="view-home">
     <div class="mnav">
       <button onclick="shiftMonth(-1)" aria-label="前の月">‹</button>
-      <div class="m-label" id="monthLabel">----年--月</div>
+      <div class="m-label" id="mLabelHome">----年--月</div>
       <button onclick="shiftMonth(1)" aria-label="次の月">›</button>
     </div>
-    <div id="dashBody">
-      <div class="loading"><span class="spin"></span>読み込み中</div>
-    </div>
+    <div id="homeBody"><div class="loading"><span class="spin"></span>読み込み中</div></div>
   </section>
 
-  <!-- ---------- JOBS ---------- -->
+  <!-- ========== ATTENDANCE (勤怠) ========== -->
+  <section class="view" id="view-att">
+    <div class="mnav">
+      <button onclick="shiftMonth(-1)" aria-label="前の月">‹</button>
+      <div class="m-label" id="mLabelAtt">----年--月</div>
+      <button onclick="shiftMonth(1)" aria-label="次の月">›</button>
+    </div>
+    <div class="segment">
+      <button id="segDay" class="on" onclick="setAttMode('day')">日付ごと</button>
+      <button id="segGrid" onclick="setAttMode('grid')">月グリッド</button>
+    </div>
+    <div id="attBody"><div class="loading"><span class="spin"></span>読み込み中</div></div>
+  </section>
+
+  <!-- ========== JOBS (案件・日報) ========== -->
   <section class="view" id="view-jobs">
     <div class="sect-h"><span class="eyebrow">Jobs</span><h2>案件</h2></div>
     <button class="btn-add" onclick="openJobEditor()">＋ 新しい案件を登録</button>
-    <div id="jobsBody" style="margin-top:var(--gap)">
-      <div class="loading"><span class="spin"></span>読み込み中</div>
-    </div>
+    <div id="jobsBody" style="margin-top:var(--gap)"><div class="loading"><span class="spin"></span>読み込み中</div></div>
   </section>
 
-  <!-- ---------- LOG ENTRY ---------- -->
-  <section class="view" id="view-log">
-    <div class="sect-h"><span class="eyebrow">Daily</span><h2>日報を入力</h2></div>
-    <div class="card">
-      <div class="field">
-        <label>日付</label>
-        <input type="date" class="input" id="logDate">
-      </div>
-      <div class="field">
-        <label>作業者</label>
-        <select class="select" id="logMember"><option value="">― 選択 ―</option></select>
-      </div>
-      <div class="field">
-        <label>案件</label>
-        <select class="select" id="logJob" onchange="onLogJobChange()"><option value="">― 選択 ―</option></select>
-      </div>
-      <div class="field">
-        <label>工程（任意）</label>
-        <select class="select" id="logTask"><option value="">― 指定なし ―</option></select>
-      </div>
-      <div class="field">
-        <label>作業時間</label>
-        <div class="with-suffix">
-          <input type="number" class="input num" id="logHours" inputmode="decimal" step="0.25" min="0" max="24" placeholder="例：7.5">
-          <span class="sfx">時間</span>
-        </div>
-      </div>
-      <div class="field">
-        <label>メモ（任意）</label>
-        <textarea class="textarea" id="logNote" placeholder="作業内容・備考"></textarea>
-      </div>
-      <button class="btn btn-primary btn-block" id="logSaveBtn" onclick="saveLog()">日報を記録する</button>
-    </div>
-
-    <div class="sect-h" style="margin-top:22px"><span class="eyebrow">Recent</span><h2>最近の記録</h2></div>
-    <div id="recentLogs">
-      <div class="loading"><span class="spin"></span>読み込み中</div>
-    </div>
-  </section>
-
-  <!-- ---------- SUMMARY ---------- -->
+  <!-- ========== SUMMARY (集計) ========== -->
   <section class="view" id="view-sum">
     <div class="mnav">
       <button onclick="shiftMonth(-1)" aria-label="前の月">‹</button>
-      <div class="m-label" id="monthLabel2">----年--月</div>
+      <div class="m-label" id="mLabelSum">----年--月</div>
       <button onclick="shiftMonth(1)" aria-label="次の月">›</button>
     </div>
-    <div id="sumBody">
-      <div class="loading"><span class="spin"></span>読み込み中</div>
-    </div>
+    <div id="sumBody"><div class="loading"><span class="spin"></span>読み込み中</div></div>
   </section>
 
-  <!-- ---------- SETTINGS ---------- -->
+  <!-- ========== SETTINGS ========== -->
   <section class="view" id="view-set">
-    <div class="sect-h"><span class="eyebrow">Members</span><h2>作業者の管理</h2></div>
+    <div class="sect-h"><span class="eyebrow">Sites</span><h2>現場の管理</h2></div>
+    <button class="btn-add" onclick="openSiteEditor()">＋ 現場を追加</button>
+    <div id="sitesBody" style="margin-top:var(--gap)"></div>
+
+    <div class="sect-h" style="margin-top:24px"><span class="eyebrow">Members</span><h2>作業者の管理</h2></div>
     <button class="btn-add" onclick="openMemberEditor()">＋ 作業者を追加</button>
-    <div id="membersBody" style="margin-top:var(--gap)">
-      <div class="loading"><span class="spin"></span>読み込み中</div>
-    </div>
+    <div id="membersBody" style="margin-top:var(--gap)"></div>
 
     <div class="sect-h" style="margin-top:24px"><span class="eyebrow">Rates</span><h2>原価・税の設定</h2></div>
     <div class="card">
-      <div class="field">
-        <label>法定福利費率（社会保険・事業主負担分）</label>
-        <div class="with-suffix">
-          <input type="number" class="input num" id="setInsurance" inputmode="decimal" step="0.1" min="0" max="100">
-          <span class="sfx">%</span>
-        </div>
-        <div class="tiny dim" style="margin-top:6px">社会保険対象の作業者の労務費に上乗せされます（健保・厚年・労災等の会社負担分。目安15〜16%）</div>
-      </div>
-      <div class="field">
-        <label>間接費率（任意・人時原価に上乗せ）</label>
-        <div class="with-suffix">
-          <input type="number" class="input num" id="setOverhead" inputmode="decimal" step="0.1" min="0" max="100">
-          <span class="sfx">%</span>
-        </div>
-        <div class="tiny dim" style="margin-top:6px">工具・消耗品・現場経費などを時給に薄く乗せたい場合のみ。0でも可</div>
-      </div>
-      <div class="field">
-        <label>消費税率</label>
-        <div class="with-suffix">
-          <input type="number" class="input num" id="setTax" inputmode="decimal" step="1" min="0" max="20">
-          <span class="sfx">%</span>
-        </div>
-      </div>
+      <div class="field"><label>法定福利費率（社会保険・会社負担分）</label>
+        <div class="with-suffix"><input type="number" class="input num" id="setInsurance" inputmode="decimal" step="0.1" min="0" max="100"><span class="sfx">%</span></div>
+        <div class="tiny dim" style="margin-top:6px">社保対象の作業者の人件費に上乗せ（残業割増分も含めて計算）。目安15〜16%</div></div>
+      <div class="field"><label>間接費率（任意・人時原価に上乗せ）</label>
+        <div class="with-suffix"><input type="number" class="input num" id="setOverhead" inputmode="decimal" step="0.1" min="0" max="100"><span class="sfx">%</span></div></div>
+      <div class="field"><label>消費税率</label>
+        <div class="with-suffix"><input type="number" class="input num" id="setTax" inputmode="decimal" step="1" min="0" max="20"><span class="sfx">%</span></div></div>
       <button class="btn btn-primary btn-block" id="setSaveBtn" onclick="saveSettings()">設定を保存</button>
     </div>
-
     <div class="card">
-      <div class="sect-h"><h2 style="font-size:var(--fs-sm)">チャージレートの考え方</h2></div>
       <div class="note-box">
-        <b>人時原価</b> ＝ 時給 ×（1 ＋ 法定福利費率 ＋ 間接費率）。<br>
-        時給だけで原価を見ると会社負担の社会保険（約15%）が抜け、<b>黒字に見えて実は赤字</b>になりがちです。この設定で原価に組み込みます。
+        <b>ベース売上</b> ＝（平常＋時間外）× 現場の人工単価。残業も売上は同単価。<br>
+        <b>人件費</b> ＝ 時給×平常 ＋ 時給×残業倍率×時間外 ＋ 社保（残業割増含む）。<br>
+        <b>粗利</b> ＝ ベース売上 − 人件費 −（材料・外注）。
       </div>
     </div>
-
-    <div class="app-foot">出来高ターミナル v<span id="verNum">1</span></div>
+    <div class="app-foot">出来高ターミナル v<span id="verNum">2</span></div>
   </section>
 
 </main>
 
-<!-- ================= TAB BAR ================= -->
 <nav class="tabbar">
-  <button class="tab active" data-tab="dash" onclick="showTab('dash')"><span class="ic">▦</span>ダッシュ</button>
+  <button class="tab active" data-tab="home" onclick="showTab('home')"><span class="ic">▦</span>経営</button>
+  <button class="tab" data-tab="att" onclick="showTab('att')"><span class="ic">◷</span>勤怠</button>
   <button class="tab" data-tab="jobs" onclick="showTab('jobs')"><span class="ic">▤</span>案件</button>
-  <button class="tab" data-tab="log" onclick="showTab('log')"><span class="ic">＋</span>日報</button>
   <button class="tab" data-tab="sum" onclick="showTab('sum')"><span class="ic">▥</span>集計</button>
   <button class="tab" data-tab="set" onclick="showTab('set')"><span class="ic">⚙</span>設定</button>
 </nav>
 
-<!-- ================= MODAL ================= -->
-<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
-  <div class="modal" id="modalBox"></div>
-</div>
-
-<!-- ================= TOAST ================= -->
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()"><div class="modal" id="modalBox"></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
 "use strict";
 /* ===================================================================
-   APP CONFIG / VERSION
+   CONFIG
 =================================================================== */
-const APP_VERSION = 1;
+const APP_VERSION = 2;
 const API_BASE = "https://dekidaka.tabuchi-welding.workers.dev";
-const CACHE_KEY = "dekidaka_cache_v1";
+const CACHE_KEY = "dekidaka_cache_v2";
 
 /* ===================================================================
    STATE
 =================================================================== */
 const state = {
-  settings:{ insurance_rate:15.5, overhead_rate:0, default_tax_rate:10, min_wage:1000 },
-  members:[],
-  membersMap:{},
-  jobs:[],
-  month: ymNow(),
-  currentJobId:null,
-  loadedJobs:false,
-  loadedLog:false,
+  settings:{ insurance_rate:15.5, overhead_rate:0, default_tax_rate:10, min_wage:1000, ot_social_insurance:"1" },
+  members:[], membersMap:{}, sites:[], sitesMap:{},
+  jobs:[], month: ymNow(),
+  attMode:"day", attData:{}, attGridMember:null, currentJobId:null,
+  loadedJobs:false, booted:false,
 };
 
 /* ===================================================================
@@ -536,273 +353,304 @@ function num(v,d=0){ const n=Number(v); return isFinite(n)?n:d; }
 function clamp(n,lo,hi){ return Math.max(lo,Math.min(hi,n)); }
 function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 function yen(n){ const r=Math.round(num(n)); return (r<0?"-":"")+"¥"+Math.abs(r).toLocaleString("ja-JP"); }
-function yenPlain(n){ return Math.round(num(n)).toLocaleString("ja-JP"); }
-function pct(n){ return (num(n)>=0?"":"")+num(n).toFixed(1)+"%"; }
+function pctOf(p,d){ return d>0 ? clamp(p/d*100,-999,999) : 0; }
 function hrs(n){ const v=num(n); return (Math.round(v*100)/100)+"h"; }
 function ymNow(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"); }
 function todayStr(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
 function ymLabel(ym){ const [y,m]=ym.split("-"); return y+"年"+Number(m)+"月"; }
+function daysInMonth(ym){ const [y,m]=ym.split("-").map(Number); return new Date(y,m,0).getDate(); }
+const WD=["日","月","火","水","木","金","土"];
+function dateStr(ym,day){ return ym+"-"+String(day).padStart(2,"0"); }
+function weekdayOf(ym,day){ const [y,m]=ym.split("-").map(Number); return new Date(y,m-1,day).getDay(); }
 
-const STATUS = {
-  estimate:{label:"見積",cls:"bd-estimate"},
-  progress:{label:"進行中",cls:"bd-progress"},
-  done:{label:"完成",cls:"bd-done"},
-  billed:{label:"請求済",cls:"bd-billed"},
-  paid:{label:"入金済",cls:"bd-paid"},
-};
+const STATUS = { estimate:{label:"見積",cls:"bd-estimate"}, progress:{label:"進行中",cls:"bd-progress"}, done:{label:"完成",cls:"bd-done"}, billed:{label:"請求済",cls:"bd-billed"}, paid:{label:"入金済",cls:"bd-paid"} };
 function statusBadge(s){ const x=STATUS[s]||STATUS.progress; return `<span class="badge ${x.cls}">${x.label}</span>`; }
+const EMP = { fulltime:"正社員", parttime:"その他" };
 
 /* ===================================================================
-   API（AbortSignalタイムアウト・エラーハンドリング）
+   API
 =================================================================== */
 async function api(action, body={}, timeout=15000){
   const ctrl=new AbortController();
   const timer=setTimeout(()=>ctrl.abort(), timeout);
   try{
-    const res=await fetch(API_BASE+"?action="+encodeURIComponent(action),{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({action,...body}),
-      signal:ctrl.signal,
-    });
-    let data;
-    try{ data=await res.json(); }catch(_){ throw new Error("応答が不正です"); }
+    const res=await fetch(API_BASE+"?action="+encodeURIComponent(action),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action,...body}),signal:ctrl.signal});
+    let data; try{ data=await res.json(); }catch(_){ throw new Error("応答が不正です"); }
     if(!data.ok) throw new Error(data.error||("エラー "+res.status));
-    setConn(true);
-    return data;
+    setConn(true); return data;
   }catch(e){
-    if(e.name==="AbortError"){ setConn(false); throw new Error("通信タイムアウト（"+(timeout/1000)+"秒）"); }
     setConn(false);
+    if(e.name==="AbortError") throw new Error("通信タイムアウト（"+(timeout/1000)+"秒）");
     throw e;
   }finally{ clearTimeout(timer); }
 }
-
-function setConn(ok){
-  const d=$("connDot"), t=$("connText");
-  if(ok){ d.className="dot on"; t.textContent="接続OK"; }
-  else  { d.className="dot off"; t.textContent="未接続"; }
-}
+function setConn(ok){ const d=$("connDot"),t=$("connText"); if(ok){d.className="dot on";t.textContent="接続OK";}else{d.className="dot off";t.textContent="未接続";} }
 function setBusy(){ $("connDot").className="dot busy"; $("connText").textContent="通信中…"; }
 
 /* ===================================================================
    TOAST / LOADING
 =================================================================== */
 let toastTimer=null;
-function toast(msg,type="ok"){
-  const el=$("toast");
-  el.className="toast "+type;
-  el.textContent=msg;
-  requestAnimationFrame(()=>el.classList.add("show"));
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>el.classList.remove("show"),3200);
-}
+function toast(msg,type="ok"){ const el=$("toast"); el.className="toast "+type; el.textContent=msg; requestAnimationFrame(()=>el.classList.add("show")); clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove("show"),3200); }
 function loadingHTML(t="読み込み中"){ return `<div class="loading"><span class="spin"></span>${esc(t)}</div>`; }
 function emptyHTML(emoji,text){ return `<div class="empty"><div class="ee">${emoji}</div><div class="et">${esc(text)}</div></div>`; }
+function errHTML(msg,retryFn){ return `<div class="card"><div class="empty"><div class="ee">⚠️</div><div class="et">${esc(msg)}</div><button class="btn btn-primary btn-sm" style="margin-top:14px" onclick="${retryFn}">再試行</button></div></div>`; }
 
 /* ===================================================================
    計算コア（純粋関数・DOMに触れない）
-   社労士視点：社保対象者のみ法定福利費を計上
-   税理士視点：税抜・税込を分離
 =================================================================== */
-function chargeRate(wage, insured){
-  const ins = insured ? num(state.settings.insurance_rate)/100 : 0;
-  const oh  = num(state.settings.overhead_rate)/100;
-  return Math.round(num(wage)*(1+ins+oh));
+function memberSite(m){ return state.sitesMap[m.site_id] || {unit_price:0, overtime_mult:1.25, name:"未設定"}; }
+function chargeRate(wage, insured){ const ins=insured?num(state.settings.insurance_rate)/100:0; const oh=num(state.settings.overhead_rate)/100; return Math.round(num(wage)*(1+ins+oh)); }
+
+// 勤怠（平常・時間外）→ そのメンバーの売上・人件費・粗利
+function calcPayroll(member, normalHours, otHours){
+  const site=memberSite(member);
+  const wage=num(member.hourly_wage);
+  const otMult=num(site.overtime_mult,1.25);
+  const insRate=num(state.settings.insurance_rate)/100;
+  const otSocial=String(state.settings.ot_social_insurance)==="1";
+  const normalPay=wage*normalHours;
+  const otPay=wage*otMult*otHours;
+  const basePay=normalPay+otPay;
+  let welfare=0;
+  if(member.insured) welfare=(otSocial?basePay:normalPay)*insRate;
+  const laborCost=Math.round(basePay)+Math.round(welfare);
+  const sales=Math.round((normalHours+otHours)*num(site.unit_price));
+  return { normalHours, otHours, normalPay:Math.round(normalPay), otPay:Math.round(otPay),
+    basePay:Math.round(basePay), welfare:Math.round(welfare), laborCost, sales, profit:sales-laborCost,
+    unitPrice:num(site.unit_price), otMult };
 }
 
-// job + その案件のlogs配列 → 採算
+// 案件採算
 function calcJob(job, logs){
   let laborRaw=0, insuredLabor=0, hours=0;
   for(const l of (logs||[])){
-    const m=state.membersMap[l.member_id];
-    const w=m?num(m.hourly_wage):0;
-    const cost=num(l.hours)*w;
-    laborRaw+=cost; hours+=num(l.hours);
+    const m=state.membersMap[l.member_id]; const w=m?num(m.hourly_wage):0;
+    const cost=num(l.hours)*w; laborRaw+=cost; hours+=num(l.hours);
     if(m && m.insured) insuredLabor+=cost;
   }
   const insRate=num(state.settings.insurance_rate)/100;
-  const welfare=Math.round(insuredLabor*insRate);
-  laborRaw=Math.round(laborRaw);
+  const welfare=Math.round(insuredLabor*insRate); laborRaw=Math.round(laborRaw);
   const material=Math.max(0,Math.round(num(job.material_cost)));
   const outsource=Math.max(0,Math.round(num(job.outsource_cost)));
   const totalCost=laborRaw+welfare+material+outsource;
   const amountExcl=Math.max(0,Math.round(num(job.amount_excl)));
-  const taxRate=num(job.tax_rate,10);
-  const tax=Math.round(amountExcl*taxRate/100);
-  const amountIncl=amountExcl+tax;
+  const taxRate=num(job.tax_rate,10); const tax=Math.round(amountExcl*taxRate/100);
   const profit=amountExcl-totalCost;
-  const profitRate= amountExcl>0 ? clamp(profit/amountExcl*100,-999,999) : 0;
-  const hourlyProfit= hours>0 ? Math.round(profit/hours) : 0;
-  return {laborRaw,welfare,material,outsource,totalCost,amountExcl,taxRate,tax,amountIncl,profit,profitRate,hours:Math.round(hours*100)/100,hourlyProfit};
+  return {laborRaw,welfare,material,outsource,totalCost,amountExcl,taxRate,tax,amountIncl:amountExcl+tax,profit,profitRate:pctOf(profit,amountExcl),hours:Math.round(hours*100)/100,hourlyProfit:hours>0?Math.round(profit/hours):0};
 }
 
-// 採算メーターHTML（-100%〜+100%にマップ）
 function meterHTML(profitRate){
-  const r=clamp(num(profitRate),-100,100);
-  const w=Math.abs(r)/100*50; // 0〜50%
-  let bar;
-  if(r>=0) bar=`<div class="meter-fill pos" style="width:${w}%"></div><div class="meter-val" style="left:calc(50% + 4px)">${r.toFixed(0)}%</div>`;
-  else     bar=`<div class="meter-fill neg" style="width:${w}%"></div><div class="meter-val" style="right:calc(50% + 4px)">${r.toFixed(0)}%</div>`;
-  return `<div class="meter"><div class="meter-track"><div class="meter-zero"></div>${bar}</div>
-    <div class="meter-scale"><span>-100%</span><span>粗利率</span><span>+100%</span></div></div>`;
+  const r=clamp(num(profitRate),-100,100); const w=Math.abs(r)/100*50;
+  let bar = r>=0
+    ? `<div class="meter-fill pos" style="width:${w}%"></div><div class="meter-val" style="left:calc(50% + 4px)">${r.toFixed(0)}%</div>`
+    : `<div class="meter-fill neg" style="width:${w}%"></div><div class="meter-val" style="right:calc(50% + 4px)">${r.toFixed(0)}%</div>`;
+  return `<div class="meter"><div class="meter-track"><div class="meter-zero"></div>${bar}</div><div class="meter-scale"><span>-100%</span><span>粗利率</span><span>+100%</span></div></div>`;
 }
 
 /* ===================================================================
-   TAB / VIEW
+   TAB
 =================================================================== */
 function showTab(name){
   document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
   document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.tab===name));
-  $("view-"+name).classList.add("active");
-  window.scrollTo(0,0);
-  if(name==="dash") renderDash();
+  $("view-"+name).classList.add("active"); window.scrollTo(0,0);
+  if(name==="home") renderHome();
+  if(name==="att")  renderAtt();
   if(name==="jobs") loadJobs();
-  if(name==="log")  initLogTab();
   if(name==="sum")  renderSum();
-  if(name==="set")  loadMembersAndSettings();
+  if(name==="set")  renderSettings();
+}
+function updateMonthLabels(){ const t=ymLabel(state.month); $("mLabelHome").textContent=t; $("mLabelAtt").textContent=t; $("mLabelSum").textContent=t; }
+function shiftMonth(d){
+  const [y,m]=state.month.split("-").map(Number); const dt=new Date(y,m-1+d,1);
+  state.month=dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0"); updateMonthLabels();
+  const active=document.querySelector(".view.active").id.replace("view-","");
+  if(active==="home") renderHome(); else if(active==="att") renderAtt(); else if(active==="sum") renderSum();
 }
 
 /* ===================================================================
    BOOT
 =================================================================== */
 async function boot(){
-  // キャッシュから設定だけ即時反映（体感速度）
   try{ const c=JSON.parse(localStorage.getItem(CACHE_KEY)||"null"); if(c&&c.settings) Object.assign(state.settings,c.settings); }catch(_){}
-  $("verNum").textContent=APP_VERSION;
-  setBusy();
+  $("verNum").textContent=APP_VERSION; setBusy(); updateMonthLabels();
   try{
     const s=await api("settings.get");
     Object.assign(state.settings,{
-      insurance_rate:num(s.settings.insurance_rate,15.5),
-      overhead_rate:num(s.settings.overhead_rate,0),
-      default_tax_rate:num(s.settings.default_tax_rate,10),
-      min_wage:num(s.settings.min_wage,1000),
+      insurance_rate:num(s.settings.insurance_rate,15.5), overhead_rate:num(s.settings.overhead_rate,0),
+      default_tax_rate:num(s.settings.default_tax_rate,10), min_wage:num(s.settings.min_wage,1000),
+      ot_social_insurance:String(s.settings.ot_social_insurance||"1"),
     });
-    const m=await api("members.list");
-    state.members=m.members||[];
-    rebuildMembersMap();
-    saveCache();
-    renderDash();
-  }catch(e){
-    $("dashBody").innerHTML=`<div class="card"><div class="empty"><div class="ee">⚠️</div>
-      <div class="et">サーバーに接続できませんでした<br><span class="dim">${esc(e.message)}</span></div>
-      <button class="btn btn-primary btn-sm" style="margin-top:14px" onclick="boot()">再試行</button></div></div>`;
-  }
+    const si=await api("sites.list"); state.sites=si.sites||[]; rebuildSitesMap();
+    const m=await api("members.list"); state.members=m.members||[]; rebuildMembersMap();
+    saveCache(); state.booted=true; renderHome();
+  }catch(e){ $("homeBody").innerHTML=errHTML("サーバーに接続できませんでした：" + e.message, "boot()"); }
 }
 function rebuildMembersMap(){ state.membersMap={}; for(const m of state.members) state.membersMap[m.id]=m; }
+function rebuildSitesMap(){ state.sitesMap={}; for(const s of state.sites) state.sitesMap[s.id]=s; }
 function saveCache(){ try{ localStorage.setItem(CACHE_KEY,JSON.stringify({settings:state.settings,ts:Date.now()})); }catch(_){} }
+function activeMembers(){ return state.members.filter(m=>m.active!==0); }
 
 /* ===================================================================
-   MONTH NAV
+   HOME（経営ダッシュ：人工ベース）
 =================================================================== */
-function shiftMonth(delta){
-  const [y,m]=state.month.split("-").map(Number);
-  const d=new Date(y,m-1+delta,1);
-  state.month=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
-  updateMonthLabels();
-  renderDash(); 
-  // 集計タブが開いていれば更新
-  if($("view-sum").classList.contains("active")) renderSum();
-}
-function updateMonthLabels(){
-  const t=ymLabel(state.month);
-  $("monthLabel").textContent=t; $("monthLabel2").textContent=t;
-}
-
-/* ===================================================================
-   DASHBOARD
-=================================================================== */
-async function renderDash(){
-  updateMonthLabels();
-  const body=$("dashBody");
-  body.innerHTML=loadingHTML();
+async function renderHome(){
+  updateMonthLabels(); const body=$("homeBody"); body.innerHTML=loadingHTML();
   try{
-    const r=await api("summary.month",{month:state.month});
-    const byMember=r.byMember||[], byJob=r.byJob||[];
+    const r=await api("summary.payroll",{month:state.month});
+    // 最新のメンバー・現場で再構成（stateを更新）
+    if(r.members){ state.members=r.members; rebuildMembersMap(); }
+    if(r.sites){ state.sites=r.sites; rebuildSitesMap(); }
+    const rows=r.rows||[];
 
-    // 月次の正確な計算（社保対象者のみ法定福利費）
-    let hours=0, laborRaw=0, insuredLabor=0;
-    for(const x of byMember){
-      hours+=num(x.hours); laborRaw+=num(x.labor_cost_raw);
-      const mm=state.membersMap[x.member_id];
-      if(mm && mm.insured) insuredLabor+=num(x.labor_cost_raw);
+    let tSales=0,tLabor=0,tProfit=0,tN=0,tO=0; const per=[];
+    for(const row of rows){
+      const m=state.membersMap[row.member_id]; if(!m) continue;
+      const n=num(row.normal_hours), o=num(row.ot_hours);
+      const c=calcPayroll(m,n,o);
+      tSales+=c.sales; tLabor+=c.laborCost; tProfit+=c.profit; tN+=n; tO+=o;
+      per.push({name:m.name, days:num(row.work_days), ...c});
     }
-    const welfare=Math.round(insuredLabor*num(state.settings.insurance_rate)/100);
-    laborRaw=Math.round(laborRaw);
+    const rate=pctOf(tProfit,tSales);
 
-    // 売上・原価（その月に稼働した案件の請求額は単純合算しない＝案件は月跨ぎするため、
-    // ダッシュは「当月の稼働実績＝工数と労務原価」を主指標にする）
-    let salesExcl=0, material=0, outsource=0;
-    for(const j of byJob){ salesExcl+=num(j.amount_excl); material+=num(j.material_cost); outsource+=num(j.outsource_cost); }
+    let h="";
+    h+=`<div class="stat-grid">`;
+    h+=`<div class="stat span2"><div class="edge"></div><div class="lab">▲ ベース売上（人工）</div>
+      <div class="big">${yen(tSales)}</div><div class="sub">総工数 ${(Math.round((tN+tO)*10)/10).toLocaleString("ja-JP")}h（平常 ${tN} ＋ 残業 ${tO}）</div></div>`;
+    h+=`<div class="stat"><div class="edge" style="background:var(--spark)"></div><div class="lab">人件費（社保込）</div>
+      <div class="big" style="font-size:22px;color:var(--spark)">${yen(tLabor)}</div></div>`;
+    h+=`<div class="stat ${tProfit>=0?'good':'bad'}"><div class="edge"></div><div class="lab">粗利</div>
+      <div class="big" style="font-size:22px">${yen(tProfit)}</div><div class="sub">粗利率 ${rate.toFixed(1)}%</div></div>`;
+    h+=`</div>`;
 
-    const activeJobs = state.jobs.filter(j=>j.status==="progress").length;
+    h+=`<div class="card" style="margin-top:var(--gap)">${meterHTML(rate)}</div>`;
 
-    let html="";
-    // 当月の稼働
-    html+=`<div class="stat-grid">`;
-    html+=`<div class="stat span2"><div class="edge"></div>
-      <div class="lab">⏱ 当月の総工数</div>
-      <div class="big">${(Math.round(hours*10)/10).toLocaleString("ja-JP")}<span class="unit">時間</span></div>
-      <div class="sub">作業者 ${byMember.length} 名が稼働</div></div>`;
-    html+=`<div class="stat"><div class="edge"></div>
-      <div class="lab">直接労務費</div>
-      <div class="big" style="font-size:22px">${yen(laborRaw)}</div>
-      <div class="sub">時給 × 工数</div></div>`;
-    html+=`<div class="stat"><div class="edge" style="background:var(--spark)"></div>
-      <div class="lab">法定福利費</div>
-      <div class="big" style="font-size:22px;color:var(--spark)">${yen(welfare)}</div>
-      <div class="sub">社保 会社負担</div></div>`;
-    html+=`</div>`;
-
-    // 当月稼働案件の採算（概算）
-    html+=`<div class="card" style="margin-top:var(--gap)">
-      <div class="sect-h"><span class="eyebrow">This month</span><h2>当月稼働した案件の採算</h2></div>`;
-    if(byJob.length===0){
-      html+=emptyHTML("🗂","この月の作業記録はまだありません");
-    }else{
-      // 各案件：当月分の労務のみ反映した概算採算
-      const rows=byJob.map(j=>{
-        const laborJ=Math.round(num(j.labor_cost_raw));
-        const welfareJ=Math.round(num(j.labor_cost_raw)*num(state.settings.insurance_rate)/100); // 概算：当月労務全体に率
-        const costJ=laborJ+welfareJ+Math.round(num(j.material_cost))+Math.round(num(j.outsource_cost));
-        const profitJ=Math.round(num(j.amount_excl))-costJ;
-        const rateJ= num(j.amount_excl)>0 ? clamp(profitJ/num(j.amount_excl)*100,-999,999) : 0;
-        return {name:j.job_name,hours:num(j.hours),profit:profitJ,rate:rateJ};
-      }).sort((a,b)=>b.hours-a.hours);
-      for(const x of rows){
-        const cls=x.profit>=0?"pos":"neg";
-        html+=`<div style="padding:11px 0;border-bottom:1px solid var(--line-soft)">
-          <div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline">
-            <span style="font-weight:600;font-size:var(--fs-sm)">${esc(x.name)}</span>
-            <span class="num small ${cls==='pos'?'':''}" style="color:var(--${cls==='pos'?'profit':'loss'});font-weight:700">${yen(x.profit)}</span>
-          </div>
-          <div class="tiny dim" style="margin-top:3px">${hrs(x.hours)}・粗利率 ${x.rate.toFixed(0)}%</div>
+    h+=`<div class="card"><div class="sect-h"><span class="eyebrow">By member</span><h2>作業者別の損益</h2></div>`;
+    if(per.length===0){ h+=emptyHTML("◷","この月の勤怠はまだありません。「勤怠」タブから入力してください"); }
+    else{
+      const maxS=Math.max(...per.map(p=>p.sales),1);
+      for(const p of per.sort((a,b)=>b.sales-a.sales)){
+        const pcls=p.profit>=0?"pos":"neg";
+        h+=`<div class="bar-item">
+          <div class="bar-head"><span class="bn">${esc(p.name)} <span class="dim tiny">${p.days}日 / ${hrs(p.normalHours+p.otHours)}</span></span>
+            <span class="bv">売上 ${yen(p.sales)}</span></div>
+          <div class="bar-track"><div class="bar-fill profit" style="width:${p.sales/maxS*100}%"></div></div>
+          <div class="tiny dim" style="margin-top:4px;display:flex;justify-content:space-between">
+            <span>人件費 ${yen(p.laborCost)}</span>
+            <span style="color:var(--${pcls==='pos'?'profit':'loss'})">粗利 ${yen(p.profit)}</span></div>
         </div>`;
       }
-      html+=`<div class="tiny dim" style="margin-top:10px">※ここは当月稼働分の概算です。正確な採算は「案件」タブ→各案件の詳細をご覧ください。</div>`;
     }
-    html+=`</div>`;
+    h+=`</div>`;
+    body.innerHTML=h;
+  }catch(e){ body.innerHTML=errHTML(e.message,"renderHome()"); }
+}
 
-    // メンバー別工数
-    if(byMember.length>0){
-      const maxH=Math.max(...byMember.map(x=>num(x.hours)),1);
-      html+=`<div class="card">
-        <div class="sect-h"><span class="eyebrow">By member</span><h2>作業者別の工数</h2></div>`;
-      for(const x of byMember.sort((a,b)=>num(b.hours)-num(a.hours))){
-        const w=num(x.hours)/maxH*100;
-        html+=`<div class="bar-item">
-          <div class="bar-head"><span class="bn">${esc(x.member_name)}</span><span class="bv">${hrs(x.hours)} / ${yen(x.labor_cost_raw)}</span></div>
-          <div class="bar-track"><div class="bar-fill" style="width:${w}%"></div></div>
-        </div>`;
-      }
-      html+=`</div>`;
-    }
+/* ===================================================================
+   ATTENDANCE（勤怠）
+=================================================================== */
+function setAttMode(mode){
+  state.attMode=mode;
+  $("segDay").classList.toggle("on",mode==="day");
+  $("segGrid").classList.toggle("on",mode==="grid");
+  renderAtt();
+}
+async function loadAttData(){
+  const r=await api("att.month",{month:state.month});
+  state.attData={};
+  for(const a of (r.attendance||[])){ state.attData[a.member_id+"|"+a.work_date]={n:num(a.normal_hours),o:num(a.ot_hours)}; }
+}
+async function renderAtt(){
+  updateMonthLabels(); const body=$("attBody"); body.innerHTML=loadingHTML();
+  try{
+    if(state.members.length===0){ const m=await api("members.list"); state.members=m.members||[]; rebuildMembersMap(); }
+    await loadAttData();
+    if(activeMembers().length===0){ body.innerHTML=emptyHTML("👷","作業者が未登録です。「設定」タブから追加してください"); return; }
+    if(state.attMode==="day") renderAttDay(); else renderAttGrid();
+  }catch(e){ body.innerHTML=errHTML(e.message,"renderAtt()"); }
+}
 
-    body.innerHTML=html;
-  }catch(e){
-    body.innerHTML=`<div class="card"><div class="empty"><div class="ee">⚠️</div><div class="et">${esc(e.message)}</div>
-      <button class="btn btn-primary btn-sm" style="margin-top:14px" onclick="renderDash()">再試行</button></div></div>`;
+// 日付ごと：日付選択→全員の平常/時間外
+function renderAttDay(){
+  const body=$("attBody");
+  if(!state._attDay) state._attDay=todayStr().slice(0,7)===state.month ? todayStr() : dateStr(state.month,1);
+  if(state._attDay.slice(0,7)!==state.month) state._attDay=dateStr(state.month,1);
+  const d=state._attDay;
+  let h=`<div class="card">
+    <div class="field" style="margin-bottom:14px"><label>日付</label>
+      <input type="date" class="input" id="attDayDate" value="${d}" min="${dateStr(state.month,1)}" max="${dateStr(state.month,daysInMonth(state.month))}" onchange="onAttDayDate()"></div>
+    <div class="att-name-row" style="border-bottom:1px solid var(--line)"><div class="nm dim tiny" style="font-weight:700">作業者</div><div class="dim tiny c" style="text-align:center;font-weight:700">平常</div><div class="dim tiny c" style="text-align:center;font-weight:700">時間外</div></div>`;
+  for(const m of activeMembers()){
+    const k=m.id+"|"+d; const v=state.attData[k]||{n:"",o:""};
+    h+=`<div class="att-name-row">
+      <div class="nm">${esc(m.name)}</div>
+      <input type="number" inputmode="decimal" step="0.25" min="0" max="24" class="att-cell" data-m="${m.id}" data-f="n" value="${v.n===0?'':esc(v.n)}" placeholder="0">
+      <input type="number" inputmode="decimal" step="0.25" min="0" max="24" class="att-cell ot" data-m="${m.id}" data-f="o" value="${v.o===0?'':esc(v.o)}" placeholder="0">
+    </div>`;
   }
+  h+=`<button class="btn btn-primary btn-block" id="attDaySave" style="margin-top:16px" onclick="saveAttDay()">この日を保存</button>
+    <div class="tiny dim" style="margin-top:10px">空欄＝記録なし。後から修正できます。</div></div>`;
+  body.innerHTML=h;
+}
+function onAttDayDate(){ state._attDay=$("attDayDate").value; renderAttDay(); }
+async function saveAttDay(){
+  const d=$("attDayDate").value; const rows=[];
+  document.querySelectorAll('#attBody .att-name-row .att-cell').forEach(()=>{});
+  const map={};
+  document.querySelectorAll('#attBody .att-cell').forEach(inp=>{
+    const id=inp.dataset.m, f=inp.dataset.f; map[id]=map[id]||{n:0,o:0}; map[id][f]=clamp(num(inp.value),0,24);
+  });
+  for(const id in map){ rows.push({member_id:Number(id),work_date:d,normal_hours:map[id].n,ot_hours:map[id].o}); }
+  const btn=$("attDaySave"); btn.disabled=true; btn.textContent="保存中…";
+  try{ const r=await api("att.saveBulk",{rows}); toast(`${d} を保存（${r.saved}件）`,"ok"); await loadAttData(); }
+  catch(e){ toast(e.message,"err"); }
+  finally{ btn.disabled=false; btn.textContent="この日を保存"; }
+}
+
+// 月グリッド：作業者選択→月の各日
+function renderAttGrid(){
+  const body=$("attBody");
+  const ams=activeMembers();
+  if(!state.attGridMember || !state.membersMap[state.attGridMember] || state.membersMap[state.attGridMember].active===0) state.attGridMember=ams[0].id;
+  const mid=state.attGridMember; const dim=daysInMonth(state.month);
+  let h=`<div class="card">
+    <div class="field" style="margin-bottom:14px"><label>作業者</label>
+      <select class="select" id="attGridSel" onchange="onAttGridSel()">
+        ${ams.map(m=>`<option value="${m.id}" ${m.id===mid?"selected":""}>${esc(m.name)}</option>`).join("")}</select></div>
+    <div class="att-grid-head"><div>日付</div><div class="c">平常</div><div class="c">時間外</div></div>`;
+  for(let day=1; day<=dim; day++){
+    const ds=dateStr(state.month,day); const wd=weekdayOf(state.month,day);
+    const k=mid+"|"+ds; const v=state.attData[k]||{n:"",o:""};
+    const wcls = wd===0?"sun weekend":(wd===6?"sat weekend":"");
+    h+=`<div class="att-row ${wcls}">
+      <div class="ad">${day}<small>${WD[wd]}</small></div>
+      <input type="number" inputmode="decimal" step="0.25" min="0" max="24" class="att-cell" data-d="${ds}" data-f="n" value="${v.n===0?'':esc(v.n)}" placeholder="0">
+      <input type="number" inputmode="decimal" step="0.25" min="0" max="24" class="att-cell ot" data-d="${ds}" data-f="o" value="${v.o===0?'':esc(v.o)}" placeholder="0">
+    </div>`;
+  }
+  // 合計プレビュー
+  h+=`<div class="kv total" style="margin-top:14px"><span class="k">この入力の合計</span><span class="v"><span id="attGridSum">—</span></span></div>`;
+  h+=`<button class="btn btn-primary btn-block" id="attGridSave" style="margin-top:14px" onclick="saveAttGrid()">この月を保存</button>
+    <div class="tiny dim" style="margin-top:10px">空欄＝記録なし。土日は色付き。</div></div>`;
+  body.innerHTML=h;
+  recalcGridSum();
+  document.querySelectorAll('#attBody .att-cell').forEach(inp=>inp.addEventListener('input',recalcGridSum));
+}
+function recalcGridSum(){
+  let n=0,o=0;
+  document.querySelectorAll('#attBody .att-cell').forEach(inp=>{ const v=clamp(num(inp.value),0,24); if(inp.dataset.f==="n") n+=v; else o+=v; });
+  const el=$("attGridSum"); if(el) el.textContent=`平常 ${Math.round(n*100)/100}h ＋ 残業 ${Math.round(o*100)/100}h`;
+}
+function onAttGridSel(){ state.attGridMember=Number($("attGridSel").value); renderAttGrid(); }
+async function saveAttGrid(){
+  const mid=Number($("attGridSel").value); const map={};
+  document.querySelectorAll('#attBody .att-cell').forEach(inp=>{ const d=inp.dataset.d,f=inp.dataset.f; map[d]=map[d]||{n:0,o:0}; map[d][f]=clamp(num(inp.value),0,24); });
+  const rows=Object.keys(map).map(d=>({member_id:mid,work_date:d,normal_hours:map[d].n,ot_hours:map[d].o}));
+  const btn=$("attGridSave"); btn.disabled=true; btn.textContent="保存中…";
+  try{ const r=await api("att.saveBulk",{rows}); toast(`保存しました（${r.saved}件）`,"ok"); await loadAttData(); }
+  catch(e){ toast(e.message,"err"); }
+  finally{ btn.disabled=false; btn.textContent="この月を保存"; }
 }
 
 /* ===================================================================
@@ -812,508 +660,297 @@ async function loadJobs(force){
   const body=$("jobsBody");
   if(state.loadedJobs && !force){ renderJobs(); return; }
   body.innerHTML=loadingHTML();
-  try{
-    const r=await api("jobs.list");
-    state.jobs=r.jobs||[];
-    state.loadedJobs=true;
-    renderJobs();
-  }catch(e){
-    body.innerHTML=`<div class="card"><div class="empty"><div class="ee">⚠️</div><div class="et">${esc(e.message)}</div>
-      <button class="btn btn-primary btn-sm" style="margin-top:14px" onclick="loadJobs(true)">再試行</button></div></div>`;
-  }
+  try{ const r=await api("jobs.list"); state.jobs=r.jobs||[]; state.loadedJobs=true; renderJobs(); }
+  catch(e){ body.innerHTML=errHTML(e.message,"loadJobs(true)"); }
 }
 function renderJobs(){
   const body=$("jobsBody");
   if(state.jobs.length===0){ body.innerHTML=emptyHTML("🗂","案件がありません。上のボタンから登録してください"); return; }
   let html="";
   for(const j of state.jobs){
-    // 一覧は概算（社保は労務全体に率をかけた保守値）
     const labor=Math.round(num(j.labor_cost_raw));
     const welfare=Math.round(num(j.labor_cost_raw)*num(state.settings.insurance_rate)/100);
     const cost=labor+welfare+Math.round(num(j.material_cost))+Math.round(num(j.outsource_cost));
-    const profit=Math.round(num(j.amount_excl))-cost;
-    const rate= num(j.amount_excl)>0 ? clamp(profit/num(j.amount_excl)*100,-999,999) : 0;
-    const pcls=profit>=0?"pos":"neg";
+    const profit=Math.round(num(j.amount_excl))-cost; const rate=pctOf(profit,num(j.amount_excl)); const pcls=profit>=0?"profit":"loss";
     html+=`<div class="card card-tap job-row" onclick="openJobDetail(${j.id})">
-      <div class="job-top">
-        <span class="job-name">${esc(j.name)}</span>
-        ${statusBadge(j.status)}
-      </div>
+      <div class="job-top"><span class="job-name">${esc(j.name)}</span>${statusBadge(j.status)}</div>
       ${j.client?`<div class="job-client">${esc(j.client)}</div>`:""}
       <div class="job-figs">
         <div><div class="fk">請求(税抜)</div><div class="fv">${yen(j.amount_excl)}</div></div>
         <div><div class="fk">工数</div><div class="fv">${hrs(j.total_hours)}</div></div>
-        <div><div class="fk">粗利(概算)</div><div class="fv" style="color:var(--${pcls==='pos'?'profit':'loss'})">${yen(profit)}</div></div>
-      </div>
-      ${meterHTML(rate)}
-    </div>`;
+        <div><div class="fk">粗利(概算)</div><div class="fv" style="color:var(--${pcls})">${yen(profit)}</div></div>
+      </div>${meterHTML(rate)}</div>`;
   }
   body.innerHTML=html;
 }
-
-/* ---------- JOB DETAIL ---------- */
 async function openJobDetail(id){
-  state.currentJobId=id;
-  openModalRaw(loadingHTML("案件を読み込み中"));
-  try{
-    const r=await api("jobs.get",{id});
-    renderJobDetail(r.job, r.tasks||[], r.logs||[]);
-  }catch(e){
-    openModalRaw(`<div class="empty"><div class="ee">⚠️</div><div class="et">${esc(e.message)}</div></div>`);
-  }
+  state.currentJobId=id; openModalRaw(loadingHTML("案件を読み込み中"));
+  try{ const r=await api("jobs.get",{id}); renderJobDetail(r.job,r.tasks||[],r.logs||[]); }
+  catch(e){ openModalRaw(`<div class="empty"><div class="ee">⚠️</div><div class="et">${esc(e.message)}</div></div>`); }
 }
-function renderJobDetail(job, tasks, logs){
-  const c=calcJob(job,logs);
-  const pcls=c.profit>=0?"pos":"neg";
-  let h=`<div class="modal-grip"></div>`;
-  h+=`<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:6px">
-        <div class="modal-h" style="flex:1;margin:0">${esc(job.name)}</div>${statusBadge(job.status)}</div>`;
+function renderJobDetail(job,tasks,logs){
+  const c=calcJob(job,logs); const pcls=c.profit>=0?"pos":"neg";
+  let h=`<div class="modal-grip"></div>
+    <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:6px"><div class="modal-h" style="flex:1;margin:0">${esc(job.name)}</div>${statusBadge(job.status)}</div>`;
   if(job.client) h+=`<div class="muted small" style="margin-bottom:14px">${esc(job.client)}</div>`;
-
-  // 採算メーター
   h+=`<div class="card" style="margin-bottom:14px">${meterHTML(c.profitRate)}</div>`;
-
-  // 採算内訳
-  h+=`<div class="card">
-    <div class="sect-h"><span class="eyebrow">収支</span><h2>採算の内訳</h2></div>
+  h+=`<div class="card"><div class="sect-h"><span class="eyebrow">収支</span><h2>採算の内訳</h2></div>
     <div class="kv"><span class="k">請求額（税抜）</span><span class="v">${yen(c.amountExcl)}</span></div>
     <div class="kv"><span class="k">消費税（${c.taxRate}%）</span><span class="v">${yen(c.tax)}</span></div>
     <div class="kv"><span class="k">請求額（税込）</span><span class="v">${yen(c.amountIncl)}</span></div>
     <div class="divider" style="margin:10px 0"></div>
     <div class="kv"><span class="k">直接労務費</span><span class="v">${yen(c.laborRaw)}</span></div>
-    <div class="kv"><span class="k">法定福利費（社保会社負担）</span><span class="v">${yen(c.welfare)}</span></div>
+    <div class="kv"><span class="k">法定福利費</span><span class="v">${yen(c.welfare)}</span></div>
     <div class="kv"><span class="k">材料費</span><span class="v">${yen(c.material)}</span></div>
     <div class="kv"><span class="k">外注費</span><span class="v">${yen(c.outsource)}</span></div>
     <div class="kv"><span class="k">総原価</span><span class="v">${yen(c.totalCost)}</span></div>
-    <div class="kv total"><span class="k">粗利（税抜ベース）</span><span class="v ${pcls}">${yen(c.profit)}</span></div>
-  </div>`;
-
-  // 指標
+    <div class="kv total"><span class="k">粗利（税抜ベース）</span><span class="v ${pcls}">${yen(c.profit)}</span></div></div>`;
   h+=`<div class="stat-grid">
-    <div class="stat ${c.profit>=0?'good':'bad'}"><div class="edge"></div>
-      <div class="lab">粗利率</div><div class="big" style="font-size:26px">${c.profitRate.toFixed(1)}<span class="unit">%</span></div></div>
-    <div class="stat"><div class="edge"></div>
-      <div class="lab">時間採算</div><div class="big" style="font-size:22px">${yen(c.hourlyProfit)}</div>
-      <div class="sub">1時間あたり粗利</div></div>
-    <div class="stat span2"><div class="edge"></div>
-      <div class="lab">投入工数</div><div class="big" style="font-size:22px">${hrs(c.hours)}</div></div>
-  </div>`;
-
+    <div class="stat ${c.profit>=0?'good':'bad'}"><div class="edge"></div><div class="lab">粗利率</div><div class="big" style="font-size:26px">${c.profitRate.toFixed(1)}<span class="unit">%</span></div></div>
+    <div class="stat"><div class="edge"></div><div class="lab">時間採算</div><div class="big" style="font-size:22px">${yen(c.hourlyProfit)}</div><div class="sub">1時間あたり粗利</div></div>
+    <div class="stat span2"><div class="edge"></div><div class="lab">投入工数</div><div class="big" style="font-size:22px">${hrs(c.hours)}</div></div></div>`;
   // 工程
-  h+=`<div class="card">
-    <div class="sect-h"><span class="eyebrow">工程</span><h2>工程</h2></div>`;
+  h+=`<div class="card"><div class="sect-h"><span class="eyebrow">工程</span><h2>工程</h2></div>`;
   if(tasks.length===0){ h+=`<div class="tiny dim" style="padding:6px 0 12px">工程は未登録です</div>`; }
-  else{
-    // 工程別の実績工数
-    const byTask={};
-    for(const l of logs){ if(l.task_id){ byTask[l.task_id]=(byTask[l.task_id]||0)+num(l.hours); } }
-    for(const t of tasks){
-      const done=byTask[t.id]||0;
-      h+=`<div class="line-item">
-        <div class="li-main"><div class="li-title">${esc(t.name)}</div>
-          <div class="li-sub">予定 ${hrs(t.planned_hours)} ／ 実績 ${hrs(done)}</div></div>
-      </div>`;
-    }
-  }
-  h+=`<button class="btn-add btn-sm" style="margin-top:8px" onclick="openTaskEditor(${job.id})">＋ 工程を編集</button>`;
-  h+=`</div>`;
-
-  // 作業履歴
-  h+=`<div class="card">
-    <div class="sect-h"><span class="eyebrow">履歴</span><h2>作業記録（${logs.length}件）</h2></div>`;
+  else{ const byT={}; for(const l of logs){ if(l.task_id) byT[l.task_id]=(byT[l.task_id]||0)+num(l.hours); }
+    for(const t of tasks){ h+=`<div class="line-item"><div class="li-main"><div class="li-title">${esc(t.name)}</div><div class="li-sub">予定 ${hrs(t.planned_hours)} ／ 実績 ${hrs(byT[t.id]||0)}</div></div></div>`; } }
+  h+=`<button class="btn-add btn-sm" style="margin-top:8px" onclick="openTaskEditor(${job.id})">＋ 工程を編集</button></div>`;
+  // 作業記録
+  h+=`<div class="card"><div class="sect-h"><span class="eyebrow">履歴</span><h2>作業記録（${logs.length}件）</h2></div>`;
   if(logs.length===0){ h+=`<div class="tiny dim" style="padding:6px 0">まだ記録がありません</div>`; }
-  else{
-    for(const l of logs.slice(0,30)){
-      const m=state.membersMap[l.member_id];
-      const w=m?num(m.hourly_wage):0;
-      h+=`<div class="line-item">
-        <div class="li-main">
-          <div class="li-title">${esc(l.member_name||(m?m.name:"?"))} ・ ${hrs(l.hours)}</div>
-          <div class="li-sub">${esc(l.work_date)}${l.task_name?" ・ "+esc(l.task_name):""}${l.note?" ・ "+esc(l.note):""}</div>
-        </div>
-        <span class="li-val">${yen(num(l.hours)*w)}</span>
-        <button class="li-x" onclick="delLog(${l.id})" aria-label="削除">×</button>
-      </div>`;
-    }
-    if(logs.length>30) h+=`<div class="tiny dim" style="margin-top:8px">直近30件を表示</div>`;
-  }
-  h+=`</div>`;
-
-  // 操作
-  h+=`<div class="btn-row" style="margin-top:4px">
-    <button class="btn btn-ghost" onclick='openJobEditor(${JSON.stringify(job).replace(/'/g,"&#39;")})'>編集</button>
-    <button class="btn btn-danger" onclick="delJob(${job.id})">削除</button>
-  </div>
-  <button class="btn btn-ghost btn-block" style="margin-top:10px" onclick="closeModal()">閉じる</button>`;
-
+  else{ for(const l of logs.slice(0,30)){ const m=state.membersMap[l.member_id]; const w=m?num(m.hourly_wage):0;
+    h+=`<div class="line-item"><div class="li-main"><div class="li-title">${esc(l.member_name||(m?m.name:"?"))} ・ ${hrs(l.hours)}</div><div class="li-sub">${esc(l.work_date)}${l.task_name?" ・ "+esc(l.task_name):""}${l.note?" ・ "+esc(l.note):""}</div></div><span class="li-val">${yen(num(l.hours)*w)}</span><button class="li-x" onclick="delLog(${l.id})">×</button></div>`; }
+    if(logs.length>30) h+=`<div class="tiny dim" style="margin-top:8px">直近30件を表示</div>`; }
+  h+=`<button class="btn-add btn-sm" style="margin-top:8px" onclick="openLogEditor(${job.id})">＋ 作業を記録（案件別）</button></div>`;
+  h+=`<div class="btn-row" style="margin-top:4px"><button class="btn btn-ghost" onclick='openJobEditor(${JSON.stringify(job).replace(/'/g,"&#39;")})'>編集</button><button class="btn btn-danger" onclick="delJob(${job.id})">削除</button></div>
+    <button class="btn btn-ghost btn-block" style="margin-top:10px" onclick="closeModal()">閉じる</button>`;
   $("modalBox").innerHTML=h;
 }
 
-/* ---------- JOB EDITOR ---------- */
 function openJobEditor(job){
   const j=job||{name:"",client:"",amount_excl:"",tax_rate:state.settings.default_tax_rate,material_cost:"",outsource_cost:"",status:"progress",due_date:"",note:""};
   const isEdit=!!(job&&job.id);
-  let h=`<div class="modal-grip"></div><div class="modal-h">${isEdit?"案件を編集":"新しい案件"}</div>`;
-  h+=`<div class="field"><label>案件名 <span style="color:var(--loss)">*</span></label>
-        <input type="text" class="input" id="jeName" value="${esc(j.name)}" placeholder="例：A工場 架台製作"></div>`;
-  h+=`<div class="field"><label>客先</label>
-        <input type="text" class="input" id="jeClient" value="${esc(j.client)}" placeholder="例：○○建設"></div>`;
-  h+=`<div class="field"><label>請求額（税抜）</label>
-        <div class="with-suffix"><input type="number" class="input num" id="jeAmount" inputmode="numeric" value="${esc(j.amount_excl)}" placeholder="0"><span class="sfx">円</span></div></div>`;
-  h+=`<div class="row2">
-        <div class="field"><label>消費税率</label>
-          <div class="with-suffix"><input type="number" class="input num" id="jeTax" inputmode="decimal" value="${esc(j.tax_rate)}" step="1"><span class="sfx">%</span></div></div>
-        <div class="field"><label>状態</label>
-          <select class="select" id="jeStatus">
-            ${Object.entries(STATUS).map(([k,v])=>`<option value="${k}" ${j.status===k?"selected":""}>${v.label}</option>`).join("")}
-          </select></div>
-      </div>`;
-  h+=`<div class="row2">
-        <div class="field"><label>材料費</label>
-          <div class="with-suffix"><input type="number" class="input num" id="jeMaterial" inputmode="numeric" value="${esc(j.material_cost)}" placeholder="0"><span class="sfx">円</span></div></div>
-        <div class="field"><label>外注費</label>
-          <div class="with-suffix"><input type="number" class="input num" id="jeOutsource" inputmode="numeric" value="${esc(j.outsource_cost)}" placeholder="0"><span class="sfx">円</span></div></div>
-      </div>`;
-  h+=`<div class="field"><label>納期（任意）</label>
-        <input type="date" class="input" id="jeDue" value="${esc(j.due_date)}"></div>`;
-  h+=`<div class="field"><label>メモ（任意）</label>
-        <textarea class="textarea" id="jeNote" placeholder="備考">${esc(j.note)}</textarea></div>`;
-  h+=`<button class="btn btn-primary btn-block" id="jeSave" onclick="saveJob(${isEdit?j.id:'null'})">${isEdit?"更新する":"登録する"}</button>`;
-  h+=`<button class="btn btn-ghost btn-block" style="margin-top:10px" onclick="closeModal()">キャンセル</button>`;
+  let h=`<div class="modal-grip"></div><div class="modal-h">${isEdit?"案件を編集":"新しい案件"}</div>
+    <div class="field"><label>案件名 <span style="color:var(--loss)">*</span></label><input type="text" class="input" id="jeName" value="${esc(j.name)}" placeholder="例：A工場 架台製作"></div>
+    <div class="field"><label>客先</label><input type="text" class="input" id="jeClient" value="${esc(j.client)}" placeholder="例：○○建設"></div>
+    <div class="field"><label>請求額（税抜）</label><div class="with-suffix"><input type="number" class="input num" id="jeAmount" inputmode="numeric" value="${esc(j.amount_excl)}" placeholder="0"><span class="sfx">円</span></div></div>
+    <div class="row2"><div class="field"><label>消費税率</label><div class="with-suffix"><input type="number" class="input num" id="jeTax" inputmode="decimal" value="${esc(j.tax_rate)}" step="1"><span class="sfx">%</span></div></div>
+      <div class="field"><label>状態</label><select class="select" id="jeStatus">${Object.entries(STATUS).map(([k,v])=>`<option value="${k}" ${j.status===k?"selected":""}>${v.label}</option>`).join("")}</select></div></div>
+    <div class="row2"><div class="field"><label>材料費</label><div class="with-suffix"><input type="number" class="input num" id="jeMaterial" inputmode="numeric" value="${esc(j.material_cost)}" placeholder="0"><span class="sfx">円</span></div></div>
+      <div class="field"><label>外注費</label><div class="with-suffix"><input type="number" class="input num" id="jeOutsource" inputmode="numeric" value="${esc(j.outsource_cost)}" placeholder="0"><span class="sfx">円</span></div></div></div>
+    <div class="field"><label>納期（任意）</label><input type="date" class="input" id="jeDue" value="${esc(j.due_date)}"></div>
+    <div class="field"><label>メモ（任意）</label><textarea class="textarea" id="jeNote" placeholder="備考">${esc(j.note)}</textarea></div>
+    <button class="btn btn-primary btn-block" id="jeSave" onclick="saveJob(${isEdit?j.id:'null'})">${isEdit?"更新する":"登録する"}</button>
+    <button class="btn btn-ghost btn-block" style="margin-top:10px" onclick="closeModal()">キャンセル</button>`;
   openModalRaw(h);
 }
 async function saveJob(id){
-  const name=$("jeName").value.trim();
-  if(!name){ toast("案件名を入力してください","err"); return; }
+  const name=$("jeName").value.trim(); if(!name){ toast("案件名を入力してください","err"); return; }
   const btn=$("jeSave"); btn.disabled=true; btn.textContent="保存中…";
-  const payload={
-    name, client:$("jeClient").value.trim(),
-    amount_excl:num($("jeAmount").value), tax_rate:num($("jeTax").value,10),
-    material_cost:num($("jeMaterial").value), outsource_cost:num($("jeOutsource").value),
-    status:$("jeStatus").value, due_date:$("jeDue").value, note:$("jeNote").value.trim(),
-  };
-  if(id) payload.id=id;
-  try{
-    await api("jobs.save",payload);
-    toast(id?"案件を更新しました":"案件を登録しました","ok");
-    closeModal();
-    await loadJobs(true);
-    if(!$("view-jobs").classList.contains("active")) showTab("jobs");
-  }catch(e){ toast(e.message,"err"); btn.disabled=false; btn.textContent=id?"更新する":"登録する"; }
+  const p={name,client:$("jeClient").value.trim(),amount_excl:num($("jeAmount").value),tax_rate:num($("jeTax").value,10),material_cost:num($("jeMaterial").value),outsource_cost:num($("jeOutsource").value),status:$("jeStatus").value,due_date:$("jeDue").value,note:$("jeNote").value.trim()};
+  if(id) p.id=id;
+  try{ await api("jobs.save",p); toast(id?"案件を更新しました":"案件を登録しました","ok"); closeModal(); await loadJobs(true); if(!$("view-jobs").classList.contains("active")) showTab("jobs"); }
+  catch(e){ toast(e.message,"err"); btn.disabled=false; btn.textContent=id?"更新する":"登録する"; }
 }
-async function delJob(id){
-  if(!confirm("この案件を削除します。工程・作業記録もすべて消えます。よろしいですか？")) return;
-  try{ await api("jobs.delete",{id}); toast("案件を削除しました","ok"); closeModal(); await loadJobs(true); }
-  catch(e){ toast(e.message,"err"); }
-}
+async function delJob(id){ if(!confirm("この案件を削除します。工程・作業記録もすべて消えます。よろしいですか？")) return;
+  try{ await api("jobs.delete",{id}); toast("案件を削除しました","ok"); closeModal(); await loadJobs(true); }catch(e){ toast(e.message,"err"); } }
 
-/* ---------- TASK EDITOR ---------- */
-async function openTaskEditor(jobId){
-  openModalRaw(loadingHTML());
-  try{
-    const r=await api("jobs.get",{id:jobId});
-    const tasks=r.tasks||[];
-    renderTaskEditor(jobId, tasks);
-  }catch(e){ openModalRaw(`<div class="empty"><div class="et">${esc(e.message)}</div></div>`); }
-}
-function renderTaskEditor(jobId, tasks){
-  let h=`<div class="modal-grip"></div><div class="modal-h">工程の編集</div>`;
-  h+=`<div class="note-box" style="margin-bottom:14px">工程名と予定工数を入力します。行を空にして保存すると、その工程は削除されます（作業記録がある工程は残ります）。</div>`;
-  h+=`<div id="taskRows">`;
-  const list = tasks.length? tasks : [{name:"",planned_hours:""}];
-  for(const t of list){ h+=taskRowHTML(t); }
-  h+=`</div>`;
-  h+=`<button class="btn-add btn-sm" onclick="addTaskRow()">＋ 行を追加</button>`;
-  h+=`<button class="btn btn-primary btn-block" id="tkSave" style="margin-top:14px" onclick="saveTasks(${jobId})">工程を保存</button>`;
-  h+=`<button class="btn btn-ghost btn-block" style="margin-top:10px" onclick="openJobDetail(${jobId})">戻る</button>`;
+// 案件別 作業記録（任意）
+function openLogEditor(jobId){
+  const ams=activeMembers();
+  let h=`<div class="modal-grip"></div><div class="modal-h">作業を記録</div>
+    <div class="field"><label>日付</label><input type="date" class="input" id="leDate" value="${todayStr()}"></div>
+    <div class="field"><label>作業者</label><select class="select" id="leMember"><option value="">― 選択 ―</option>${ams.map(m=>`<option value="${m.id}">${esc(m.name)}</option>`).join("")}</select></div>
+    <div class="field"><label>作業時間</label><div class="with-suffix"><input type="number" class="input num" id="leHours" inputmode="decimal" step="0.25" min="0" max="24" placeholder="例：7.5"><span class="sfx">時間</span></div></div>
+    <div class="field"><label>メモ（任意）</label><textarea class="textarea" id="leNote" placeholder="作業内容"></textarea></div>
+    <button class="btn btn-primary btn-block" id="leSave" onclick="saveLogEntry(${jobId})">記録する</button>
+    <button class="btn btn-ghost btn-block" style="margin-top:10px" onclick="openJobDetail(${jobId})">戻る</button>
+    <div class="note-box" style="margin-top:12px">この記録は案件別の採算用です。給与・人工売上は「勤怠」タブが正です。</div>`;
   openModalRaw(h);
 }
-function taskRowHTML(t){
-  return `<div class="task-row" data-id="${t.id||''}" style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
-    <input type="text" class="input tk-name" value="${esc(t.name||'')}" placeholder="工程名（例：溶接）" style="flex:2">
-    <div class="with-suffix" style="flex:1"><input type="number" class="input num tk-ph" inputmode="decimal" value="${esc(t.planned_hours||'')}" placeholder="予定" step="0.5" style="padding-right:34px"><span class="sfx">h</span></div>
-  </div>`;
-}
-function addTaskRow(){ $("taskRows").insertAdjacentHTML("beforeend", taskRowHTML({})); }
-async function saveTasks(jobId){
-  const rows=[...document.querySelectorAll("#taskRows .task-row")];
-  const tasks=rows.map(r=>{
-    const id=r.dataset.id; const name=r.querySelector(".tk-name").value.trim();
-    const ph=num(r.querySelector(".tk-ph").value);
-    const o={name,planned_hours:ph}; if(id) o.id=Number(id); return o;
-  }).filter(t=>t.name);
-  const btn=$("tkSave"); btn.disabled=true; btn.textContent="保存中…";
-  try{
-    await api("tasks.save",{job_id:jobId,tasks});
-    toast("工程を保存しました","ok");
-    state.loadedLog=false; // 日報の工程候補も更新
-    openJobDetail(jobId);
-  }catch(e){ toast(e.message,"err"); btn.disabled=false; btn.textContent="工程を保存"; }
-}
-
-/* ===================================================================
-   LOG ENTRY TAB
-=================================================================== */
-async function initLogTab(){
-  if(!$("logDate").value) $("logDate").value=todayStr();
-  // 作業者ドロップダウン
-  fillMemberSelect($("logMember"));
-  // 案件ドロップダウン（jobs必要）
-  if(!state.loadedJobs){ try{ const r=await api("jobs.list"); state.jobs=r.jobs||[]; state.loadedJobs=true; }catch(_){} }
-  fillJobSelect($("logJob"));
-  // 最近の記録
-  loadRecentLogs();
-}
-function fillMemberSelect(sel){
-  const cur=sel.value;
-  sel.innerHTML=`<option value="">― 選択 ―</option>`+
-    state.members.filter(m=>m.active!==0).map(m=>`<option value="${m.id}">${esc(m.name)}</option>`).join("");
-  sel.value=cur;
-}
-function fillJobSelect(sel){
-  const cur=sel.value;
-  const open=state.jobs.filter(j=>j.status!=="paid");
-  sel.innerHTML=`<option value="">― 選択 ―</option>`+
-    open.map(j=>`<option value="${j.id}">${esc(j.name)}</option>`).join("");
-  sel.value=cur;
-}
-async function onLogJobChange(){
-  const jobId=$("logJob").value;
-  const taskSel=$("logTask");
-  taskSel.innerHTML=`<option value="">― 指定なし ―</option>`;
-  if(!jobId) return;
-  try{
-    const r=await api("jobs.get",{id:Number(jobId)});
-    for(const t of (r.tasks||[])) taskSel.innerHTML+=`<option value="${t.id}">${esc(t.name)}</option>`;
-  }catch(_){}
-}
-async function saveLog(){
-  const member_id=num($("logMember").value);
-  const job_id=num($("logJob").value);
-  const work_date=$("logDate").value;
-  const hours=num($("logHours").value);
+async function saveLogEntry(jobId){
+  const member_id=num($("leMember").value); const work_date=$("leDate").value; const hours=num($("leHours").value);
   if(!member_id){ toast("作業者を選んでください","err"); return; }
-  if(!job_id){ toast("案件を選んでください","err"); return; }
   if(!work_date){ toast("日付を入れてください","err"); return; }
   if(hours<=0){ toast("作業時間を入れてください","err"); return; }
-  const btn=$("logSaveBtn"); btn.disabled=true; btn.textContent="記録中…";
-  try{
-    await api("logs.save",{
-      member_id,job_id,work_date,hours,
-      task_id:num($("logTask").value),
-      note:$("logNote").value.trim(),
-    });
-    toast("日報を記録しました","ok");
-    $("logHours").value=""; $("logNote").value="";
-    state.loadedJobs=false; // 集計に反映
-    loadRecentLogs();
-  }catch(e){ toast(e.message,"err"); }
-  finally{ btn.disabled=false; btn.textContent="日報を記録する"; }
+  const btn=$("leSave"); btn.disabled=true; btn.textContent="記録中…";
+  try{ await api("logs.save",{job_id:jobId,member_id,work_date,hours,note:$("leNote").value.trim(),task_id:0}); toast("記録しました","ok"); state.loadedJobs=false; openJobDetail(jobId); }
+  catch(e){ toast(e.message,"err"); btn.disabled=false; btn.textContent="記録する"; }
 }
-async function loadRecentLogs(){
-  const body=$("recentLogs");
-  body.innerHTML=loadingHTML();
-  try{
-    const r=await api("logs.list",{limit:20});
-    const logs=r.logs||[];
-    if(logs.length===0){ body.innerHTML=emptyHTML("📋","まだ作業記録がありません"); return; }
-    let h=`<div class="card">`;
-    for(const l of logs){
-      const m=state.membersMap[l.member_id]; const w=m?num(m.hourly_wage):0;
-      h+=`<div class="line-item">
-        <div class="li-main">
-          <div class="li-title">${esc(l.member_name||"?")} ・ ${esc(l.job_name||"")}</div>
-          <div class="li-sub">${esc(l.work_date)} ・ ${hrs(l.hours)}${l.task_name?" ・ "+esc(l.task_name):""}</div>
-        </div>
-        <span class="li-val">${yen(num(l.hours)*w)}</span>
-        <button class="li-x" onclick="delLogRecent(${l.id})" aria-label="削除">×</button>
-      </div>`;
-    }
-    h+=`</div>`;
-    body.innerHTML=h;
-  }catch(e){
-    body.innerHTML=`<div class="card"><div class="empty"><div class="et">${esc(e.message)}</div></div></div>`;
-  }
+async function delLog(id){ if(!confirm("この作業記録を削除しますか？")) return;
+  try{ await api("logs.delete",{id}); toast("削除しました","ok"); state.loadedJobs=false; if(state.currentJobId) openJobDetail(state.currentJobId); }catch(e){ toast(e.message,"err"); } }
+
+async function openTaskEditor(jobId){
+  openModalRaw(loadingHTML());
+  try{ const r=await api("jobs.get",{id:jobId}); renderTaskEditor(jobId,r.tasks||[]); }
+  catch(e){ openModalRaw(`<div class="empty"><div class="et">${esc(e.message)}</div></div>`); }
 }
-async function delLog(id){
-  if(!confirm("この作業記録を削除しますか？")) return;
-  try{ await api("logs.delete",{id}); toast("削除しました","ok"); if(state.currentJobId) openJobDetail(state.currentJobId); }
-  catch(e){ toast(e.message,"err"); }
+function renderTaskEditor(jobId,tasks){
+  let h=`<div class="modal-grip"></div><div class="modal-h">工程の編集</div>
+    <div class="note-box" style="margin-bottom:14px">工程名と予定工数を入力。行を空にして保存するとその工程は削除（作業記録がある工程は残ります）。</div><div id="taskRows">`;
+  const list=tasks.length?tasks:[{name:"",planned_hours:""}];
+  for(const t of list) h+=taskRowHTML(t);
+  h+=`</div><button class="btn-add btn-sm" onclick="addTaskRow()">＋ 行を追加</button>
+    <button class="btn btn-primary btn-block" id="tkSave" style="margin-top:14px" onclick="saveTasks(${jobId})">工程を保存</button>
+    <button class="btn btn-ghost btn-block" style="margin-top:10px" onclick="openJobDetail(${jobId})">戻る</button>`;
+  openModalRaw(h);
 }
-async function delLogRecent(id){
-  if(!confirm("この作業記録を削除しますか？")) return;
-  try{ await api("logs.delete",{id}); toast("削除しました","ok"); state.loadedJobs=false; loadRecentLogs(); }
-  catch(e){ toast(e.message,"err"); }
+function taskRowHTML(t){ return `<div class="task-row" data-id="${t.id||''}" style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
+  <input type="text" class="input tk-name" value="${esc(t.name||'')}" placeholder="工程名（例：溶接）" style="flex:2">
+  <div class="with-suffix" style="flex:1"><input type="number" class="input num tk-ph" inputmode="decimal" value="${esc(t.planned_hours||'')}" placeholder="予定" step="0.5" style="padding-right:34px"><span class="sfx">h</span></div></div>`; }
+function addTaskRow(){ $("taskRows").insertAdjacentHTML("beforeend",taskRowHTML({})); }
+async function saveTasks(jobId){
+  const rows=[...document.querySelectorAll("#taskRows .task-row")];
+  const tasks=rows.map(r=>{ const id=r.dataset.id; const name=r.querySelector(".tk-name").value.trim(); const ph=num(r.querySelector(".tk-ph").value); const o={name,planned_hours:ph}; if(id) o.id=Number(id); return o; }).filter(t=>t.name);
+  const btn=$("tkSave"); btn.disabled=true; btn.textContent="保存中…";
+  try{ await api("tasks.save",{job_id:jobId,tasks}); toast("工程を保存しました","ok"); openJobDetail(jobId); }
+  catch(e){ toast(e.message,"err"); btn.disabled=false; btn.textContent="工程を保存"; }
 }
 
 /* ===================================================================
-   SUMMARY TAB
+   SUMMARY（集計）：勤怠ベース（人工） ＋ 案件別
 =================================================================== */
 async function renderSum(){
-  updateMonthLabels();
-  const body=$("sumBody");
-  body.innerHTML=loadingHTML();
+  updateMonthLabels(); const body=$("sumBody"); body.innerHTML=loadingHTML();
   try{
-    const r=await api("summary.month",{month:state.month});
-    const byMember=r.byMember||[], byJob=r.byJob||[];
+    const pr=await api("summary.payroll",{month:state.month});
+    if(pr.members){ state.members=pr.members; rebuildMembersMap(); }
+    if(pr.sites){ state.sites=pr.sites; rebuildSitesMap(); }
+    const rows=pr.rows||[];
+    let tSales=0,tLabor=0,tProfit=0,tN=0,tO=0; const per=[];
+    for(const row of rows){ const m=state.membersMap[row.member_id]; if(!m) continue;
+      const n=num(row.normal_hours),o=num(row.ot_hours); const c=calcPayroll(m,n,o);
+      tSales+=c.sales; tLabor+=c.laborCost; tProfit+=c.profit; tN+=n; tO+=o;
+      per.push({m,days:num(row.work_days),...c}); }
 
-    let hours=0, laborRaw=0, insuredLabor=0;
-    for(const x of byMember){
-      hours+=num(x.hours); laborRaw+=num(x.labor_cost_raw);
-      const mm=state.membersMap[x.member_id];
-      if(mm && mm.insured) insuredLabor+=num(x.labor_cost_raw);
-    }
-    const welfare=Math.round(insuredLabor*num(state.settings.insurance_rate)/100);
-    const trueLaborCost=Math.round(laborRaw)+welfare;
+    let h=`<div class="card"><div class="sect-h"><span class="eyebrow">${esc(ymLabel(state.month))}</span><h2>当月の損益（人工ベース）</h2></div>
+      <div class="kv"><span class="k">ベース売上（人工）</span><span class="v">${yen(tSales)}</span></div>
+      <div class="kv"><span class="k">人件費（社保込・残業割増込）</span><span class="v">${yen(tLabor)}</span></div>
+      <div class="kv total"><span class="k">粗利</span><span class="v ${tProfit>=0?'pos':'neg'}">${yen(tProfit)}</span></div>
+      <div class="kv"><span class="k">粗利率</span><span class="v">${pctOf(tProfit,tSales).toFixed(1)}%</span></div>
+      <div class="kv"><span class="k">総工数</span><span class="v">${hrs(tN+tO)}（平常${tN}＋残業${tO}）</span></div></div>`;
 
-    let h="";
-    h+=`<div class="card">
-      <div class="sect-h"><span class="eyebrow">${esc(ymLabel(state.month))}</span><h2>当月の人件費合計</h2></div>
-      <div class="kv"><span class="k">直接労務費（時給×工数）</span><span class="v">${yen(laborRaw)}</span></div>
-      <div class="kv"><span class="k">法定福利費（社保 会社負担）</span><span class="v">${yen(welfare)}</span></div>
-      <div class="kv total"><span class="k">実質人件費</span><span class="v">${yen(trueLaborCost)}</span></div>
-      <div class="kv"><span class="k">総工数</span><span class="v">${hrs(hours)}</span></div>
-    </div>`;
-
-    // メンバー別
     h+=`<div class="card"><div class="sect-h"><span class="eyebrow">By member</span><h2>作業者別の明細</h2></div>`;
-    if(byMember.length===0){ h+=emptyHTML("👷","この月の稼働はありません"); }
-    else{
-      for(const x of byMember.sort((a,b)=>num(b.labor_cost_raw)-num(a.labor_cost_raw))){
-        const m=state.membersMap[x.member_id];
-        const rate=chargeRate(num(x.wage), m?m.insured:1);
-        h+=`<div class="line-item">
-          <div class="li-main"><div class="li-title">${esc(x.member_name)}${m&&!m.insured?' <span class="chip">社保対象外</span>':''}</div>
-            <div class="li-sub">${hrs(x.hours)} ・ 時給 ${yen(x.wage)} ・ 人時原価 ${yen(rate)}</div></div>
-          <span class="li-val">${yen(x.labor_cost_raw)}</span>
-        </div>`;
-      }
-    }
+    if(per.length===0){ h+=emptyHTML("◷","この月の勤怠はありません"); }
+    else{ for(const p of per.sort((a,b)=>b.sales-a.sales)){
+      h+=`<div style="padding:11px 0;border-bottom:1px solid var(--line-soft)">
+        <div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline">
+          <span style="font-weight:600">${esc(p.m.name)}${p.m.employment==='fulltime'?' <span class="chip ft">正社員</span>':''}${p.m.insured?'':' <span class="chip">社保外</span>'}</span>
+          <span class="num small" style="color:var(--${p.profit>=0?'profit':'loss'});font-weight:700">粗利 ${yen(p.profit)}</span></div>
+        <div class="tiny dim" style="margin-top:4px">${p.days}日 / 平常${p.normalHours}h 残業${p.otHours}h ・ 単価¥${p.unitPrice.toLocaleString()}</div>
+        <div class="tiny" style="margin-top:3px;display:flex;justify-content:space-between"><span class="dim">売上 ${yen(p.sales)}</span><span class="dim">人件費 ${yen(p.laborCost)}（社保 ${yen(p.welfare)}）</span></div></div>`;
+    } }
     h+=`</div>`;
 
-    // 案件別採算（概算）
-    h+=`<div class="card"><div class="sect-h"><span class="eyebrow">By job</span><h2>案件別の採算（概算）</h2></div>`;
-    if(byJob.length===0){ h+=emptyHTML("🗂","この月の案件稼働はありません"); }
-    else{
-      for(const j of byJob.sort((a,b)=>num(b.amount_excl)-num(a.amount_excl))){
-        const laborJ=Math.round(num(j.labor_cost_raw));
-        const welfareJ=Math.round(num(j.labor_cost_raw)*num(state.settings.insurance_rate)/100);
-        const costJ=laborJ+welfareJ+Math.round(num(j.material_cost))+Math.round(num(j.outsource_cost));
-        const profitJ=Math.round(num(j.amount_excl))-costJ;
-        const pcls=profitJ>=0?"pos":"neg";
-        h+=`<div class="line-item">
-          <div class="li-main"><div class="li-title">${esc(j.job_name)}</div>
-            <div class="li-sub">${hrs(j.hours)} ・ 請求 ${yen(j.amount_excl)}</div></div>
-          <span class="li-val" style="color:var(--${pcls==='pos'?'profit':'loss'})">${yen(profitJ)}</span>
-        </div>`;
-      }
-      h+=`<div class="tiny dim" style="margin-top:10px">※法定福利費は当月労務全体に率をかけた概算です。月跨ぎ案件の通期採算は「案件」タブの詳細が正確です。</div>`;
-    }
+    // 案件別（参考・概算）
+    const sm=await api("summary.month",{month:state.month}); const byJob=sm.byJob||[];
+    h+=`<div class="card"><div class="sect-h"><span class="eyebrow">By job</span><h2>案件別の稼働（参考）</h2></div>`;
+    if(byJob.length===0){ h+=`<div class="tiny dim" style="padding:6px 0">この月の案件稼働はありません</div>`; }
+    else{ for(const j of byJob.sort((a,b)=>num(b.hours)-num(a.hours))){
+      h+=`<div class="line-item"><div class="li-main"><div class="li-title">${esc(j.job_name)}</div><div class="li-sub">${hrs(j.hours)} ・ 請求 ${yen(j.amount_excl)}</div></div></div>`; }
+      h+=`<div class="tiny dim" style="margin-top:8px">案件別の正確な採算は「案件」タブの詳細をご覧ください。</div>`; }
     h+=`</div>`;
-
     body.innerHTML=h;
-  }catch(e){
-    body.innerHTML=`<div class="card"><div class="empty"><div class="ee">⚠️</div><div class="et">${esc(e.message)}</div>
-      <button class="btn btn-primary btn-sm" style="margin-top:14px" onclick="renderSum()">再試行</button></div></div>`;
-  }
+  }catch(e){ body.innerHTML=errHTML(e.message,"renderSum()"); }
 }
 
 /* ===================================================================
-   SETTINGS / MEMBERS
+   SETTINGS（現場・作業者・原価）
 =================================================================== */
-async function loadMembersAndSettings(){
-  // 設定値を反映
+async function renderSettings(){
   $("setInsurance").value=state.settings.insurance_rate;
   $("setOverhead").value=state.settings.overhead_rate;
   $("setTax").value=state.settings.default_tax_rate;
-  renderMembers();
+  try{
+    const si=await api("sites.list"); state.sites=si.sites||[]; rebuildSitesMap();
+    const m=await api("members.list"); state.members=m.members||[]; rebuildMembersMap();
+  }catch(_){}
+  renderSites(); renderMembers();
 }
+function renderSites(){
+  const body=$("sitesBody");
+  if(state.sites.length===0){ body.innerHTML=emptyHTML("🏗","現場が未登録です"); return; }
+  let h=`<div class="card" style="padding:8px var(--pad)">`;
+  for(const s of state.sites){
+    h+=`<div class="line-item"><div class="li-main"><div class="li-title">${esc(s.name)}</div>
+      <div class="li-sub">人工単価 ${yen(s.unit_price)} ・ 残業 ×${num(s.overtime_mult,1.25)}</div></div>
+      <button class="btn btn-ghost btn-sm" onclick='openSiteEditor(${JSON.stringify(s).replace(/'/g,"&#39;")})'>編集</button></div>`;
+  }
+  h+=`</div>`; body.innerHTML=h;
+}
+function openSiteEditor(site){
+  const s=site||{name:"",unit_price:"",overtime_mult:1.25};
+  const isEdit=!!(site&&site.id);
+  let h=`<div class="modal-grip"></div><div class="modal-h">${isEdit?"現場を編集":"現場を追加"}</div>
+    <div class="field"><label>現場名 <span style="color:var(--loss)">*</span></label><input type="text" class="input" id="seName" value="${esc(s.name)}" placeholder="例：本現場"></div>
+    <div class="field"><label>人工単価（1時間あたりの売上）</label><div class="with-suffix"><input type="number" class="input num" id="sePrice" inputmode="numeric" value="${esc(s.unit_price)}" placeholder="例：4000"><span class="sfx">円</span></div></div>
+    <div class="field"><label>残業倍率</label><div class="with-suffix"><input type="number" class="input num" id="seOt" inputmode="decimal" step="0.05" value="${esc(s.overtime_mult)}" placeholder="1.25"><span class="sfx">倍</span></div>
+      <div class="tiny dim" style="margin-top:6px">人件費の残業計算に使用（売上は平常も残業も人工単価のまま）</div></div>
+    <button class="btn btn-primary btn-block" id="seSave" onclick="saveSite(${isEdit?s.id:'null'})">${isEdit?"更新する":"追加する"}</button>`;
+  if(isEdit) h+=`<button class="btn btn-danger btn-block" style="margin-top:10px" onclick="delSite(${s.id})">削除</button>`;
+  h+=`<button class="btn btn-ghost btn-block" style="margin-top:10px" onclick="closeModal()">キャンセル</button>`;
+  openModalRaw(h);
+}
+async function saveSite(id){
+  const name=$("seName").value.trim(); if(!name){ toast("現場名を入力してください","err"); return; }
+  const btn=$("seSave"); btn.disabled=true; btn.textContent="保存中…";
+  const p={name,unit_price:num($("sePrice").value),overtime_mult:num($("seOt").value,1.25)}; if(id) p.id=id;
+  try{ await api("sites.save",p); const si=await api("sites.list"); state.sites=si.sites||[]; rebuildSitesMap(); toast(id?"更新しました":"追加しました","ok"); closeModal(); renderSites(); }
+  catch(e){ toast(e.message,"err"); btn.disabled=false; btn.textContent=id?"更新する":"追加する"; }
+}
+async function delSite(id){ if(!confirm("この現場を削除しますか？")) return;
+  try{ await api("sites.delete",{id}); const si=await api("sites.list"); state.sites=si.sites||[]; rebuildSitesMap(); toast("削除しました","ok"); closeModal(); renderSites(); }
+  catch(e){ toast(e.message,"err"); } }
+
 function renderMembers(){
   const body=$("membersBody");
   if(state.members.length===0){ body.innerHTML=emptyHTML("👷","作業者が未登録です。上のボタンから追加してください"); return; }
   let h=`<div class="card" style="padding:8px var(--pad)">`;
   for(const m of state.members){
-    const rate=chargeRate(num(m.hourly_wage), m.insured);
-    const inactive=m.active===0;
+    const rate=chargeRate(num(m.hourly_wage),m.insured); const inactive=m.active===0; const site=memberSite(m);
     h+=`<div class="line-item" ${inactive?'style="opacity:.5"':''}>
-      <div class="li-main">
-        <div class="li-title">${esc(m.name)}${m.insured?'':' <span class="chip">社保対象外</span>'}${inactive?' <span class="chip">無効</span>':''}</div>
-        <div class="li-sub">時給 ${yen(m.hourly_wage)} ・ 人時原価 ${yen(rate)}</div>
-      </div>
-      <button class="btn btn-ghost btn-sm" onclick='openMemberEditor(${JSON.stringify(m).replace(/'/g,"&#39;")})'>編集</button>
-    </div>`;
+      <div class="li-main"><div class="li-title">${esc(m.name)}${m.employment==='fulltime'?' <span class="chip ft">正社員</span>':''}${m.insured?'':' <span class="chip">社保外</span>'}${inactive?' <span class="chip">無効</span>':''}</div>
+        <div class="li-sub">${esc(site.name||'現場未設定')} ・ 時給 ${yen(m.hourly_wage)} ・ 人時原価 ${yen(rate)}</div></div>
+      <button class="btn btn-ghost btn-sm" onclick='openMemberEditor(${JSON.stringify(m).replace(/'/g,"&#39;")})'>編集</button></div>`;
   }
-  h+=`</div>`;
-  body.innerHTML=h;
+  h+=`</div>`; body.innerHTML=h;
 }
 function openMemberEditor(member){
-  const m=member||{name:"",hourly_wage:"",insured:1,active:1};
+  const m=member||{name:"",hourly_wage:"",insured:1,active:1,employment:"parttime",site_id:(state.sites[0]?state.sites[0].id:0)};
   const isEdit=!!(member&&member.id);
-  let h=`<div class="modal-grip"></div><div class="modal-h">${isEdit?"作業者を編集":"作業者を追加"}</div>`;
-  h+=`<div class="field"><label>名前 <span style="color:var(--loss)">*</span></label>
-        <input type="text" class="input" id="meName" value="${esc(m.name)}" placeholder="例：田渕 太郎"></div>`;
-  h+=`<div class="field"><label>時給</label>
-        <div class="with-suffix"><input type="number" class="input num" id="meWage" inputmode="numeric" value="${esc(m.hourly_wage)}" placeholder="例：2000"><span class="sfx">円</span></div>
-        <div class="tiny dim" style="margin-top:6px">最低賃金の目安：${yen(state.settings.min_wage)}</div></div>`;
-  h+=`<div class="field"><label>社会保険</label>
-        <select class="select" id="meInsured">
-          <option value="1" ${m.insured?"selected":""}>対象（法定福利費を計上）</option>
-          <option value="0" ${!m.insured?"selected":""}>対象外</option>
-        </select></div>`;
-  if(isEdit){
-    h+=`<div class="field"><label>状態</label>
-          <select class="select" id="meActive">
-            <option value="1" ${m.active!==0?"selected":""}>有効</option>
-            <option value="0" ${m.active===0?"selected":""}>無効（一覧から隠す）</option>
-          </select></div>`;
-  }
+  let h=`<div class="modal-grip"></div><div class="modal-h">${isEdit?"作業者を編集":"作業者を追加"}</div>
+    <div class="field"><label>名前 <span style="color:var(--loss)">*</span></label><input type="text" class="input" id="meName" value="${esc(m.name)}" placeholder="例：佐藤"></div>
+    <div class="field"><label>時給（手入力・編集可）</label><div class="with-suffix"><input type="number" class="input num" id="meWage" inputmode="numeric" value="${esc(m.hourly_wage)}" placeholder="例：2000"><span class="sfx">円</span></div>
+      <div class="tiny dim" style="margin-top:6px">最低賃金の目安：${yen(state.settings.min_wage)}</div></div>
+    <div class="field"><label>所属現場（人工単価）</label><select class="select" id="meSite">${state.sites.map(s=>`<option value="${s.id}" ${m.site_id==s.id?"selected":""}>${esc(s.name)}（${yen(s.unit_price)}）</option>`).join("")}</select></div>
+    <div class="row2">
+      <div class="field"><label>雇用区分</label><select class="select" id="meEmp"><option value="fulltime" ${m.employment==='fulltime'?"selected":""}>正社員</option><option value="parttime" ${m.employment!=='fulltime'?"selected":""}>その他</option></select></div>
+      <div class="field"><label>社会保険</label><select class="select" id="meInsured"><option value="1" ${m.insured?"selected":""}>対象</option><option value="0" ${!m.insured?"selected":""}>対象外</option></select></div></div>`;
+  if(isEdit) h+=`<div class="field"><label>状態</label><select class="select" id="meActive"><option value="1" ${m.active!==0?"selected":""}>有効</option><option value="0" ${m.active===0?"selected":""}>無効（一覧から隠す）</option></select></div>`;
   h+=`<button class="btn btn-primary btn-block" id="meSave" onclick="saveMember(${isEdit?m.id:'null'})">${isEdit?"更新する":"追加する"}</button>`;
   if(isEdit) h+=`<button class="btn btn-danger btn-block" style="margin-top:10px" onclick="delMember(${m.id})">削除</button>`;
   h+=`<button class="btn btn-ghost btn-block" style="margin-top:10px" onclick="closeModal()">キャンセル</button>`;
   openModalRaw(h);
 }
 async function saveMember(id){
-  const name=$("meName").value.trim();
-  if(!name){ toast("名前を入力してください","err"); return; }
+  const name=$("meName").value.trim(); if(!name){ toast("名前を入力してください","err"); return; }
   const wage=num($("meWage").value);
-  if(wage>0 && wage<num(state.settings.min_wage)){
-    if(!confirm("時給が最低賃金の目安（"+yen(state.settings.min_wage)+"）を下回っています。このまま保存しますか？")) return;
-  }
+  if(wage>0 && wage<num(state.settings.min_wage)){ if(!confirm("時給が最低賃金の目安（"+yen(state.settings.min_wage)+"）を下回っています。保存しますか？")) return; }
   const btn=$("meSave"); btn.disabled=true; btn.textContent="保存中…";
-  const payload={name,hourly_wage:wage,insured:Number($("meInsured").value)?1:0};
-  if(id){ payload.id=id; payload.active=$("meActive")?Number($("meActive").value):1; }
-  try{
-    await api("members.save",payload);
-    const m=await api("members.list"); state.members=m.members||[]; rebuildMembersMap();
-    toast(id?"更新しました":"追加しました","ok");
-    closeModal(); renderMembers();
-  }catch(e){ toast(e.message,"err"); btn.disabled=false; btn.textContent=id?"更新する":"追加する"; }
+  const p={name,hourly_wage:wage,insured:Number($("meInsured").value)?1:0,employment:$("meEmp").value,site_id:Number($("meSite").value)};
+  if(id){ p.id=id; p.active=$("meActive")?Number($("meActive").value):1; }
+  try{ await api("members.save",p); const m=await api("members.list"); state.members=m.members||[]; rebuildMembersMap(); toast(id?"更新しました":"追加しました","ok"); closeModal(); renderMembers(); }
+  catch(e){ toast(e.message,"err"); btn.disabled=false; btn.textContent=id?"更新する":"追加する"; }
 }
-async function delMember(id){
-  if(!confirm("この作業者を削除しますか？（作業記録がある場合は『無効』として残ります）")) return;
-  try{
-    const r=await api("members.delete",{id});
-    const m=await api("members.list"); state.members=m.members||[]; rebuildMembersMap();
-    toast(r.soft?"無効にしました（記録は保持）":"削除しました","ok");
-    closeModal(); renderMembers();
-  }catch(e){ toast(e.message,"err"); }
-}
+async function delMember(id){ if(!confirm("この作業者を削除しますか？（勤怠・作業記録がある場合は『無効』として残ります）")) return;
+  try{ const r=await api("members.delete",{id}); const m=await api("members.list"); state.members=m.members||[]; rebuildMembersMap(); toast(r.soft?"無効にしました（記録は保持）":"削除しました","ok"); closeModal(); renderMembers(); }
+  catch(e){ toast(e.message,"err"); } }
+
 async function saveSettings(){
   const btn=$("setSaveBtn"); btn.disabled=true; btn.textContent="保存中…";
-  const s={
-    insurance_rate:String(clamp(num($("setInsurance").value),0,100)),
-    overhead_rate:String(clamp(num($("setOverhead").value),0,100)),
-    default_tax_rate:String(clamp(num($("setTax").value),0,20)),
-  };
-  try{
-    await api("settings.save",{settings:s});
-    state.settings.insurance_rate=num(s.insurance_rate);
-    state.settings.overhead_rate=num(s.overhead_rate);
-    state.settings.default_tax_rate=num(s.default_tax_rate);
-    saveCache();
-    toast("設定を保存しました","ok");
-    renderMembers();
-  }catch(e){ toast(e.message,"err"); }
+  const s={ insurance_rate:String(clamp(num($("setInsurance").value),0,100)), overhead_rate:String(clamp(num($("setOverhead").value),0,100)), default_tax_rate:String(clamp(num($("setTax").value),0,20)) };
+  try{ await api("settings.save",{settings:s}); state.settings.insurance_rate=num(s.insurance_rate); state.settings.overhead_rate=num(s.overhead_rate); state.settings.default_tax_rate=num(s.default_tax_rate); saveCache(); toast("設定を保存しました","ok"); renderMembers(); }
+  catch(e){ toast(e.message,"err"); }
   finally{ btn.disabled=false; btn.textContent="設定を保存"; }
 }
 
@@ -1324,19 +961,12 @@ function openModalRaw(html){ $("modalBox").innerHTML=html; $("modalBg").classLis
 function closeModal(){ $("modalBg").classList.remove("show"); document.body.style.overflow=""; }
 
 /* ===================================================================
-   更新チェック（visibilitychange）／ iOSキャッシュ対策
+   visibilitychange（iOSキャッシュ対策・復帰時更新）
 =================================================================== */
 document.addEventListener("visibilitychange",()=>{
   if(document.visibilityState==="visible"){
-    // 復帰時に接続確認＋表示中タブを再取得
-    api("ping").then(()=>{
-      const active=document.querySelector(".view.active");
-      if(!active) return;
-      const id=active.id.replace("view-","");
-      if(id==="dash") renderDash();
-      else if(id==="sum") renderSum();
-      else if(id==="log") loadRecentLogs();
-    }).catch(()=>{});
+    api("ping").then(()=>{ const a=document.querySelector(".view.active"); if(!a) return; const id=a.id.replace("view-","");
+      if(id==="home") renderHome(); else if(id==="att") renderAtt(); else if(id==="sum") renderSum(); }).catch(()=>{});
   }
 });
 
