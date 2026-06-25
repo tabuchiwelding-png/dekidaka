@@ -3,173 +3,208 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#0f1722">
+<meta name="theme-color" content="#0b2541">
 <title>出来高ターミナル</title>
 <style>
 /* ===================================================================
-   CSS VARIABLES
+   DESIGN TOKENS
+   主題：製図（青写真）×溶接ビード×決算書の表題欄
+   色　：青写真の紺(地)／真鍮(操作)／緑青=銅の錆(利益)／赤錆(損失)
+   字　：見出し=明朝(知的・格式)／数値=モノスペース(計器読み)／UI=サンセリフ
 =================================================================== */
 :root{
-  --bg:#0f1722; --bg-2:#15202e; --surface:#1b2735; --surface-2:#22303f;
-  --line:#2c3c4d; --line-soft:#243140;
-  --ink:#eef3f8; --ink-sub:#9fb0c0; --ink-dim:#6c7d8d;
-  --steel:#2f80ed; --steel-dark:#1d5fc0; --steel-soft:rgba(47,128,237,.14);
-  --profit:#22c08b; --profit-soft:rgba(34,192,139,.14);
-  --loss:#f0556b; --loss-soft:rgba(240,85,107,.14);
-  --spark:#f5a623; --spark-soft:rgba(245,166,35,.14);
-  --t-estimate:#8595a5; --t-progress:#f5a623; --t-done:#2f80ed; --t-billed:#9b7cff; --t-paid:#22c08b;
+  --paper:#0b2541;        /* 青写真の紺 */
+  --paper-2:#0e2f52;      /* パネル面 */
+  --paper-3:#123a63;      /* 内側・押下面 */
+  --line:#2f5c8c;         /* 製図の罫線 */
+  --line-soft:#1c3f66;
+  --ink:#eaf2fb;          /* チョークの白 */
+  --ink-sub:#9fc1e0;
+  --ink-dim:#5e84ab;
+
+  --brass:#caa53a;        /* 真鍮＝操作・強調 */
+  --brass-dark:#a3811f;
+  --brass-soft:rgba(202,165,58,.16);
+  --verdigris:#5fa88f;    /* 緑青＝利益 */
+  --verdigris-soft:rgba(95,168,143,.16);
+  --rust:#c1502f;         /* 赤錆＝損失・警告 */
+  --rust-soft:rgba(193,80,47,.16);
+
   --font:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;
+  --serif:"Hiragino Mincho ProN","YuMincho","Noto Serif JP",serif;
   --mono:ui-monospace,"SF Mono","Roboto Mono",Menlo,Consolas,monospace;
-  --fs-xs:11px; --fs-sm:13px; --fs:15px; --fs-lg:17px; --fs-xl:21px; --fs-num:30px;
-  --tap:44px; --radius:12px; --radius-sm:9px; --gap:12px; --pad:16px;
-  --shadow:0 6px 22px rgba(0,0,0,.35);
+
+  --fs-xs:11px; --fs-sm:13px; --fs:15px; --fs-lg:17px; --fs-xl:21px;
+  --tap:44px; --radius:3px; --gap:12px; --pad:16px;
   --safe-b:env(safe-area-inset-bottom,0px); --safe-t:env(safe-area-inset-top,0px);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;padding:0;}
-body{font-family:var(--font);font-size:var(--fs);color:var(--ink);background:var(--bg);line-height:1.5;overflow-x:hidden;-webkit-text-size-adjust:100%;}
+body{font-family:var(--font);font-size:var(--fs);color:var(--ink);background:var(--paper);line-height:1.55;overflow-x:hidden;-webkit-text-size-adjust:100%;
+  background-image:linear-gradient(var(--line-soft) 1px,transparent 1px),linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);
+  background-size:28px 28px;background-attachment:fixed;background-position:-1px -1px;}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
 input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink);}
-.num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.3px;}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.2px;}
+.icon{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none;display:block;}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
 
-/* HEADER */
-.app-header{position:sticky;top:0;z-index:50;padding:calc(var(--safe-t) + 10px) var(--pad) 10px;
-  background:linear-gradient(180deg,#101a26 0%,rgba(16,26,38,.96) 100%);border-bottom:1px solid var(--line);backdrop-filter:blur(8px);}
-.hd-row{display:flex;align-items:center;gap:10px;}
-.hd-brand{display:flex;align-items:center;gap:9px;min-width:0;}
-.hd-spark{width:26px;height:26px;flex:none;border-radius:7px;
-  background:radial-gradient(circle at 50% 35%,#bfe0ff 0%,var(--steel) 45%,var(--steel-dark) 100%);box-shadow:0 0 12px var(--steel-soft);position:relative;}
-.hd-spark::after{content:"";position:absolute;inset:0;border-radius:7px;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,.5) 50%,transparent 60%);}
-.hd-title{font-size:var(--fs-lg);font-weight:700;letter-spacing:.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.hd-sub{font-size:var(--fs-xs);color:var(--ink-dim);margin-top:-2px;letter-spacing:.4px;}
-.hd-status{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:var(--fs-xs);color:var(--ink-sub);flex:none;}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--ink-dim);}
-.dot.on{background:var(--profit);box-shadow:0 0 8px var(--profit);}
-.dot.off{background:var(--loss);box-shadow:0 0 8px var(--loss);}
-.dot.busy{background:var(--spark);animation:pulse 1s infinite;}
+/* ===================================================================
+   TITLE BLOCK（表題欄＝ブランド＋常時バージョン表示）
+=================================================================== */
+.titleblock{position:sticky;top:0;z-index:50;background:linear-gradient(180deg,#0a2138 0%,rgba(10,33,56,.97) 100%);
+  border-bottom:1px solid var(--line);padding:calc(var(--safe-t) + 10px) var(--pad) 0;backdrop-filter:blur(8px);}
+.tb-main{display:flex;align-items:center;gap:10px;padding-bottom:10px;}
+.tb-mark{width:28px;height:28px;flex:none;color:var(--brass);}
+.tb-name{min-width:0;}
+.tb-co{font-family:var(--serif);font-size:18px;font-weight:600;letter-spacing:.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tb-sub{font-size:var(--fs-xs);color:var(--ink-dim);margin-top:-1px;letter-spacing:.3px;}
+.tb-meta{display:grid;grid-template-columns:1fr 1fr 1.3fr;border-top:1px solid var(--line-soft);}
+.tb-field{padding:6px 10px;border-left:1px solid var(--line-soft);}
+.tb-field:first-child{border-left:none;}
+.tb-k{display:block;font-size:9px;color:var(--ink-dim);letter-spacing:1.5px;font-family:var(--mono);}
+.tb-v{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:var(--fs-sm);font-weight:700;margin-top:1px;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ink-dim);flex:none;}
+.dot.on{background:var(--verdigris);box-shadow:0 0 6px var(--verdigris);}
+.dot.off{background:var(--rust);box-shadow:0 0 6px var(--rust);}
+.dot.busy{background:var(--brass);animation:pulse 1s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* LAYOUT */
-.main{padding:var(--pad);padding-bottom:calc(var(--tap) + 34px + var(--safe-b) + 20px);max-width:760px;margin:0 auto;}
-.view{display:none;}
-.view.active{display:block;animation:fade .25s ease;}
+/* ===================================================================
+   LAYOUT / TABS
+=================================================================== */
+.main{padding:var(--pad);padding-bottom:calc(var(--tap) + 30px + var(--safe-b) + 20px);max-width:760px;margin:0 auto;}
+.view{display:none;} .view.active{display:block;animation:fade .22s ease;}
 @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 
-/* TAB BAR */
-.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;padding:6px 4px calc(6px + var(--safe-b));
-  background:linear-gradient(180deg,rgba(16,26,38,.92),#0c141d);border-top:1px solid var(--line);backdrop-filter:blur(10px);}
-.tab{flex:1;min-height:var(--tap);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-  color:var(--ink-dim);font-size:10px;letter-spacing:.2px;border-radius:10px;transition:color .15s,background .15s;}
-.tab .ic{font-size:18px;line-height:1;}
-.tab.active{color:var(--steel);background:var(--steel-soft);}
-.tab:active{transform:scale(.94);}
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;
+  background:linear-gradient(180deg,rgba(10,33,56,.94),#081826);border-top:1px solid var(--line);padding-bottom:var(--safe-b);backdrop-filter:blur(10px);}
+.tab{flex:1;min-height:var(--tap);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  color:var(--ink-dim);font-size:10px;letter-spacing:.3px;position:relative;transition:color .15s;}
+.tab::after{content:"";position:absolute;top:0;left:18%;right:18%;height:2px;background:var(--brass);opacity:0;transition:opacity .15s;}
+.tab.active{color:var(--ink);} .tab.active::after{opacity:1;}
+.tab.active .icon{color:var(--brass);}
+.tab:active{opacity:.7;}
 
-/* CARDS */
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:var(--pad);margin-bottom:var(--gap);}
-.card-tap{transition:transform .12s,border-color .15s;}
-.card-tap:active{transform:scale(.985);border-color:var(--steel);}
-.sect-h{display:flex;align-items:center;gap:8px;margin:0 0 12px;}
-.sect-h h2{font-size:var(--fs);font-weight:700;margin:0;letter-spacing:.4px;}
-.sect-h .eyebrow{font-size:var(--fs-xs);color:var(--steel);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;}
-.sect-h .right{margin-left:auto;}
+/* ===================================================================
+   PANELS
+=================================================================== */
+.panel{background:var(--paper-2);border:1px solid var(--line);border-radius:var(--radius);padding:var(--pad);margin-bottom:var(--gap);}
+.panel-tap{transition:border-color .15s;} .panel-tap:active{border-color:var(--brass);}
+.frame{position:relative;}
+.frame::before,.frame::after{content:"";position:absolute;width:11px;height:11px;border:1.4px solid var(--brass);opacity:.65;pointer-events:none;}
+.frame::before{top:-1.4px;left:-1.4px;border-right:none;border-bottom:none;}
+.frame::after{bottom:-1.4px;right:-1.4px;border-left:none;border-top:none;}
+
+.sect-h{display:flex;align-items:baseline;gap:9px;margin:0 0 12px;}
+.sect-h h2{font-family:var(--serif);font-size:16px;font-weight:600;margin:0;letter-spacing:.4px;}
+.eyebrow{font-size:9px;color:var(--brass);font-weight:700;letter-spacing:2px;font-family:var(--mono);}
 .muted{color:var(--ink-sub);} .dim{color:var(--ink-dim);} .tiny{font-size:var(--fs-xs);} .small{font-size:var(--fs-sm);}
 
-/* STAT */
-.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);}
-.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px;position:relative;overflow:hidden;}
-.stat.span2{grid-column:span 2;}
-.stat .lab{font-size:var(--fs-xs);color:var(--ink-sub);letter-spacing:.5px;display:flex;align-items:center;gap:5px;}
-.stat .big{font-family:var(--mono);font-size:var(--fs-num);font-weight:700;line-height:1.1;margin-top:6px;letter-spacing:-1px;}
-.stat .unit{font-size:var(--fs-sm);color:var(--ink-sub);margin-left:3px;font-family:var(--font);}
-.stat .sub{font-size:var(--fs-xs);color:var(--ink-dim);margin-top:4px;}
-.stat .edge{position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--steel);}
-.stat.good .big{color:var(--profit);} .stat.good .edge{background:var(--profit);}
-.stat.bad .big{color:var(--loss);} .stat.bad .edge{background:var(--loss);}
+/* ===================================================================
+   DIMENSION FIGURE（寸法線数値＝最重要KPIのみ使用）
+=================================================================== */
+.dimfig{text-align:center;padding:6px 0 2px;}
+.dimfig .v{font-family:var(--mono);font-size:32px;font-weight:700;letter-spacing:-1px;}
+.dimfig .v.pos{color:var(--verdigris);} .dimfig .v.neg{color:var(--rust);}
+.dimfig .unit{font-size:13px;color:var(--ink-sub);font-family:var(--font);margin-left:3px;}
+.dimline{height:1px;background:var(--line);position:relative;margin:8px 14px 0;}
+.dimline::before,.dimline::after{content:"";position:absolute;top:-4px;width:1px;height:9px;background:var(--line);}
+.dimline::before{left:0;} .dimline::after{right:0;}
+.dimlabel{font-size:9px;letter-spacing:2.5px;color:var(--ink-dim);text-transform:uppercase;margin-top:7px;font-family:var(--mono);}
 
-/* METER */
-.meter{margin-top:10px;}
-.meter-track{position:relative;height:22px;border-radius:6px;overflow:hidden;background:var(--surface-2);border:1px solid var(--line);}
+/* KPI tiles（補助指標） */
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);}
+.kpi{background:var(--paper-2);border:1px solid var(--line);border-radius:var(--radius);padding:13px;}
+.kpi.span2{grid-column:span 2;}
+.kpi .lab{font-size:var(--fs-xs);color:var(--ink-sub);letter-spacing:.4px;}
+.kpi .big{font-family:var(--mono);font-size:24px;font-weight:700;margin-top:5px;letter-spacing:-.5px;}
+.kpi .big.pos{color:var(--verdigris);} .kpi .big.neg{color:var(--rust);}
+.kpi .sub{font-size:var(--fs-xs);color:var(--ink-dim);margin-top:3px;}
+
+/* METER（採算メーター） */
+.meter-track{position:relative;height:20px;border-radius:2px;overflow:hidden;background:var(--paper-3);border:1px solid var(--line);}
 .meter-zero{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--ink-dim);z-index:2;}
 .meter-fill{position:absolute;top:0;bottom:0;}
-.meter-fill.pos{left:50%;background:linear-gradient(90deg,var(--steel),var(--profit));}
-.meter-fill.neg{right:50%;background:linear-gradient(270deg,var(--spark),var(--loss));}
-.meter-val{position:absolute;top:50%;transform:translateY(-50%);z-index:3;font-family:var(--mono);font-size:var(--fs-xs);font-weight:700;padding:0 6px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5);}
+.meter-fill.pos{left:50%;background:var(--verdigris);}
+.meter-fill.neg{right:50%;background:var(--rust);}
+.meter-val{position:absolute;top:50%;transform:translateY(-50%);z-index:3;font-family:var(--mono);font-size:var(--fs-xs);font-weight:700;padding:0 6px;color:#08161f;}
 .meter-scale{display:flex;justify-content:space-between;font-size:9px;color:var(--ink-dim);margin-top:3px;font-family:var(--mono);}
 
-/* BADGE */
-.badge{display:inline-flex;align-items:center;gap:5px;font-size:var(--fs-xs);font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.5px;white-space:nowrap;}
-.badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;}
-.bd-estimate{color:var(--t-estimate);background:rgba(133,149,165,.15);}
-.bd-progress{color:var(--t-progress);background:var(--spark-soft);}
-.bd-done{color:var(--t-done);background:var(--steel-soft);}
-.bd-billed{color:var(--t-billed);background:rgba(155,124,255,.15);}
-.bd-paid{color:var(--t-paid);background:var(--profit-soft);}
+/* ===================================================================
+   BADGE（焼き色ステータス）
+=================================================================== */
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:var(--fs-xs);font-weight:700;padding:2px 9px;border-radius:2px;letter-spacing:.4px;white-space:nowrap;border:1px solid currentColor;}
+.bd-estimate{color:#8595a5;} .bd-progress{color:var(--brass);} .bd-done{color:#6ea0d8;} .bd-billed{color:#9b7cff;} .bd-paid{color:var(--verdigris);}
+.chip{display:inline-block;font-size:var(--fs-xs);padding:1px 7px;border-radius:2px;border:1px solid var(--line);color:var(--ink-sub);}
+.chip.ft{color:var(--brass);border-color:var(--brass-soft);}
 
 /* JOB ROW */
 .job-row{padding:14px var(--pad);}
 .job-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:4px;}
 .job-name{font-weight:700;font-size:var(--fs);flex:1;min-width:0;}
 .job-client{font-size:var(--fs-xs);color:var(--ink-sub);margin-bottom:8px;}
-.job-figs{display:flex;gap:16px;flex-wrap:wrap;font-size:var(--fs-sm);}
+.job-figs{display:flex;gap:16px;flex-wrap:wrap;font-size:var(--fs-sm);margin-bottom:10px;}
 .job-figs .fk{color:var(--ink-dim);font-size:var(--fs-xs);}
-.job-figs .fv{font-family:var(--mono);font-weight:700;font-variant-numeric:tabular-nums;}
+.job-figs .fv{font-family:var(--mono);font-weight:700;}
 
 /* KV */
 .kv{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line-soft);gap:12px;}
 .kv:last-child{border-bottom:none;}
 .kv .k{color:var(--ink-sub);font-size:var(--fs-sm);}
-.kv .v{font-family:var(--mono);font-weight:700;font-variant-numeric:tabular-nums;text-align:right;}
-.kv .v.pos{color:var(--profit);} .kv .v.neg{color:var(--loss);}
-.kv.total{border-top:2px solid var(--line);margin-top:4px;padding-top:12px;border-bottom:none;}
-.kv.total .k{color:var(--ink);font-weight:700;font-size:var(--fs);}
+.kv .v{font-family:var(--mono);font-weight:700;text-align:right;}
+.kv .v.pos{color:var(--verdigris);} .kv .v.neg{color:var(--rust);}
+.kv.total{border-top:1px solid var(--brass-soft);margin-top:4px;padding-top:12px;border-bottom:none;}
+.kv.total .k{color:var(--ink);font-weight:700;font-size:var(--fs);font-family:var(--serif);}
 .kv.total .v{font-size:var(--fs-lg);}
 
 /* FORM */
 .field{margin-bottom:14px;}
-.field label{display:block;font-size:var(--fs-sm);color:var(--ink-sub);margin-bottom:6px;font-weight:600;letter-spacing:.3px;}
-.input,.select,.textarea{width:100%;min-height:var(--tap);background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;color:var(--ink);transition:border-color .15s;}
-.textarea{min-height:80px;resize:vertical;line-height:1.5;}
-.input:focus,.select:focus,.textarea:focus{outline:none;border-color:var(--steel);box-shadow:0 0 0 3px var(--steel-soft);}
+.field label{display:block;font-size:var(--fs-sm);color:var(--ink-sub);margin-bottom:6px;font-weight:600;letter-spacing:.2px;}
+.input,.select,.textarea{width:100%;min-height:var(--tap);background:var(--paper-3);border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px;color:var(--ink);transition:border-color .15s;}
+.textarea{min-height:80px;resize:vertical;line-height:1.5;font-family:var(--mono);font-size:14px;}
+.input:focus,.select:focus,.textarea:focus{outline:none;border-color:var(--brass);box-shadow:0 0 0 3px var(--brass-soft);}
 .input::placeholder,.textarea::placeholder{color:var(--ink-dim);}
-.select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%239fb0c0' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px;}
+.select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%239fc1e0' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px;}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .with-suffix{position:relative;}
 .with-suffix .sfx{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--ink-dim);font-size:var(--fs-sm);pointer-events:none;}
 .with-suffix .input{padding-right:42px;}
 
 /* BUTTONS */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:var(--tap);padding:0 18px;border-radius:var(--radius-sm);font-weight:700;font-size:var(--fs);letter-spacing:.4px;transition:transform .1s,opacity .15s,background .15s;}
-.btn:active{transform:scale(.96);}
-.btn:disabled{opacity:.5;pointer-events:none;}
-.btn-primary{background:linear-gradient(180deg,var(--steel),var(--steel-dark));color:#fff;box-shadow:0 3px 12px var(--steel-soft);}
-.btn-ghost{background:var(--surface-2);color:var(--ink);border:1px solid var(--line);}
-.btn-danger{background:var(--loss-soft);color:var(--loss);border:1px solid rgba(240,85,107,.3);}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:var(--tap);padding:0 18px;border-radius:var(--radius);font-weight:700;font-size:var(--fs);letter-spacing:.3px;transition:transform .1s,opacity .15s;}
+.btn:active{transform:scale(.97);}
+.btn:disabled{opacity:.45;pointer-events:none;}
+.btn-primary{background:var(--brass);color:#08161f;}
+.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line);}
+.btn-danger{background:transparent;color:var(--rust);border:1px solid var(--rust-soft);}
 .btn-block{width:100%;}
 .btn-sm{min-height:36px;padding:0 12px;font-size:var(--fs-sm);}
-.btn-add{width:100%;min-height:var(--tap);border:1.5px dashed var(--line);border-radius:var(--radius-sm);color:var(--steel);font-weight:700;background:transparent;letter-spacing:.4px;}
-.btn-add:active{background:var(--steel-soft);}
+.btn-add{width:100%;min-height:var(--tap);border:1px dashed var(--line);border-radius:var(--radius);color:var(--brass);font-weight:700;background:transparent;letter-spacing:.3px;display:flex;align-items:center;justify-content:center;gap:7px;}
+.btn-add:active{background:var(--brass-soft);}
 .btn-row{display:flex;gap:10px;} .btn-row .btn{flex:1;}
+.link-btn{color:var(--brass);font-size:var(--fs-sm);font-weight:700;display:inline-flex;align-items:center;gap:5px;}
 
 /* SEGMENT */
-.segment{display:flex;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:4px;gap:4px;margin-bottom:var(--gap);}
-.segment button{flex:1;min-height:38px;border-radius:7px;font-weight:700;font-size:var(--fs-sm);color:var(--ink-sub);transition:background .15s,color .15s;}
-.segment button.on{background:var(--steel);color:#fff;}
+.segment{display:flex;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:var(--gap);}
+.segment button{flex:1;min-height:40px;font-weight:700;font-size:var(--fs-sm);color:var(--ink-sub);background:var(--paper-2);transition:background .15s,color .15s;}
+.segment button+button{border-left:1px solid var(--line);}
+.segment button.on{background:var(--brass-soft);color:var(--brass);}
 
 /* MONTH NAV */
-.mnav{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:var(--gap);}
-.mnav button{width:40px;height:40px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);font-size:18px;color:var(--ink);display:flex;align-items:center;justify-content:center;}
-.mnav button:active{transform:scale(.92);}
-.mnav .m-label{font-family:var(--mono);font-size:var(--fs-lg);font-weight:700;min-width:130px;text-align:center;}
+.mnav{display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:var(--gap);}
+.mnav button{width:38px;height:38px;border-radius:var(--radius);background:var(--paper-2);border:1px solid var(--line);font-size:17px;color:var(--ink);display:flex;align-items:center;justify-content:center;}
+.mnav button:active{background:var(--paper-3);}
+.mnav .m-label{font-family:var(--serif);font-size:var(--fs-lg);font-weight:600;min-width:120px;text-align:center;letter-spacing:.5px;}
 
 /* BAR */
-.bar-item{margin-bottom:12px;}
+.bar-item{margin-bottom:13px;}
 .bar-head{display:flex;justify-content:space-between;font-size:var(--fs-sm);margin-bottom:5px;gap:8px;}
 .bar-head .bn{font-weight:600;}
-.bar-head .bv{font-family:var(--mono);color:var(--ink-sub);font-variant-numeric:tabular-nums;}
-.bar-track{height:9px;border-radius:5px;background:var(--surface-2);overflow:hidden;}
-.bar-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--steel-dark),var(--steel));}
-.bar-fill.profit{background:linear-gradient(90deg,#16996b,var(--profit));}
+.bar-head .bv{font-family:var(--mono);color:var(--ink-sub);}
+.bar-track{height:7px;border-radius:1px;background:var(--paper-3);overflow:hidden;}
+.bar-fill{height:100%;background:var(--brass);}
+.bar-fill.profit{background:var(--verdigris);}
 
 /* LINE ITEM */
 .line-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line-soft);}
@@ -177,122 +212,131 @@ input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink);}
 .li-main{flex:1;min-width:0;}
 .li-title{font-weight:600;font-size:var(--fs-sm);}
 .li-sub{font-size:var(--fs-xs);color:var(--ink-dim);margin-top:2px;}
-.li-val{font-family:var(--mono);font-weight:700;font-variant-numeric:tabular-nums;font-size:var(--fs-sm);}
-.li-x{width:30px;height:30px;flex:none;border-radius:8px;background:var(--surface-2);color:var(--ink-dim);font-size:15px;display:flex;align-items:center;justify-content:center;}
-.li-x:active{background:var(--loss-soft);color:var(--loss);}
-.chip{display:inline-block;font-size:var(--fs-xs);padding:2px 8px;border-radius:14px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink-sub);font-family:var(--font);}
-.chip.ft{color:var(--steel);border-color:rgba(47,128,237,.3);background:var(--steel-soft);}
+.li-val{font-family:var(--mono);font-weight:700;font-size:var(--fs-sm);}
+.li-x{width:30px;height:30px;flex:none;border-radius:var(--radius);background:var(--paper-3);color:var(--ink-dim);display:flex;align-items:center;justify-content:center;}
+.li-x:active{background:var(--rust-soft);color:var(--rust);}
 
 /* ATTENDANCE GRID */
-.att-grid-head{display:grid;grid-template-columns:64px 1fr 1fr;gap:8px;padding:0 2px 8px;font-size:var(--fs-xs);color:var(--ink-dim);font-weight:700;letter-spacing:.5px;}
+.att-grid-head{display:grid;grid-template-columns:60px 1fr 1fr;gap:8px;padding:0 2px 8px;font-size:var(--fs-xs);color:var(--ink-dim);font-weight:700;letter-spacing:.5px;border-bottom:1px solid var(--line-soft);margin-bottom:4px;}
 .att-grid-head .c{text-align:center;}
-.att-row{display:grid;grid-template-columns:64px 1fr 1fr;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid var(--line-soft);}
+.att-row{display:grid;grid-template-columns:60px 1fr 1fr;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid var(--line-soft);}
 .att-row:last-child{border-bottom:none;}
-.att-row.weekend{background:rgba(245,166,35,.05);border-radius:6px;}
-.att-row.sun .ad{color:var(--loss);}
-.att-row.sat .ad{color:var(--steel);}
+.att-row.weekend{background:rgba(202,165,58,.05);}
+.att-row.sun .ad{color:var(--rust);} .att-row.sat .ad{color:#6ea0d8;}
 .att-row .ad{font-family:var(--mono);font-size:var(--fs-sm);font-weight:700;text-align:center;}
 .att-row .ad small{display:block;font-size:9px;color:var(--ink-dim);font-weight:400;}
-.att-cell{min-height:40px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 8px;color:var(--ink);font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:center;width:100%;font-size:16px;}
-.att-cell:focus{outline:none;border-color:var(--steel);box-shadow:0 0 0 2px var(--steel-soft);}
-.att-cell.ot{border-color:rgba(245,166,35,.3);}
+.att-cell{min-height:38px;background:var(--paper-3);border:1px solid var(--line);border-radius:var(--radius);padding:6px 8px;color:var(--ink);font-family:var(--mono);text-align:center;width:100%;font-size:16px;}
+.att-cell:focus{outline:none;border-color:var(--brass);}
+.att-cell.ot{border-color:var(--brass-soft);}
 .att-name-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line-soft);}
 .att-name-row:last-child{border-bottom:none;}
 .att-name-row .nm{font-weight:600;font-size:var(--fs-sm);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
+/* IMPORT PREVIEW TABLE */
+.imp-row{display:grid;grid-template-columns:1fr auto auto auto;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line-soft);font-size:var(--fs-sm);}
+.imp-row .ok{color:var(--verdigris);} .imp-row .bad{color:var(--rust);}
+
 /* EMPTY / LOADING / TOAST / MODAL */
-.empty{text-align:center;padding:40px 20px;color:var(--ink-dim);}
-.empty .ee{font-size:34px;margin-bottom:10px;opacity:.5;}
+.empty{text-align:center;padding:36px 20px;color:var(--ink-dim);}
+.empty .icon{width:30px;height:30px;margin:0 auto 12px;opacity:.6;}
 .empty .et{font-size:var(--fs-sm);}
 .loading{display:flex;align-items:center;justify-content:center;gap:10px;padding:30px;color:var(--ink-sub);font-size:var(--fs-sm);}
-.spin{width:18px;height:18px;border:2px solid var(--line);border-top-color:var(--steel);border-radius:50%;animation:rot .7s linear infinite;}
+.spin{width:16px;height:16px;border:2px solid var(--line);border-top-color:var(--brass);border-radius:50%;animation:rot .7s linear infinite;}
 @keyframes rot{to{transform:rotate(360deg)}}
-.toast{position:fixed;left:50%;bottom:calc(var(--tap) + 46px + var(--safe-b));transform:translateX(-50%) translateY(20px);z-index:200;max-width:90%;padding:12px 18px;border-radius:10px;font-size:var(--fs-sm);font-weight:600;background:#243140;color:var(--ink);border:1px solid var(--line);box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;text-align:center;}
+.toast{position:fixed;left:50%;bottom:calc(var(--tap) + 44px + var(--safe-b));transform:translateX(-50%) translateY(20px);z-index:200;max-width:90%;padding:12px 18px;border-radius:var(--radius);font-size:var(--fs-sm);font-weight:600;background:var(--paper-3);color:var(--ink);border:1px solid var(--line);box-shadow:0 8px 24px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;text-align:center;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-.toast.ok{border-color:rgba(34,192,139,.4);} .toast.ok::before{content:"✓ ";color:var(--profit);}
-.toast.err{border-color:rgba(240,85,107,.4);} .toast.err::before{content:"⚠ ";color:var(--loss);}
-.modal-bg{position:fixed;inset:0;z-index:150;background:rgba(6,11,17,.7);backdrop-filter:blur(3px);display:none;align-items:flex-end;justify-content:center;}
+.toast.ok{border-color:var(--verdigris);} .toast.ok::before{content:"● ";color:var(--verdigris);}
+.toast.err{border-color:var(--rust);} .toast.err::before{content:"● ";color:var(--rust);}
+.modal-bg{position:fixed;inset:0;z-index:150;background:rgba(4,12,20,.72);backdrop-filter:blur(2px);display:none;align-items:flex-end;justify-content:center;}
 .modal-bg.show{display:flex;animation:fade .2s;}
-.modal{width:100%;max-width:760px;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--bg-2);border:1px solid var(--line);border-radius:18px 18px 0 0;padding:var(--pad);padding-bottom:calc(var(--pad) + var(--safe-b));animation:slideup .28s cubic-bezier(.2,.8,.2,1);}
+.modal{width:100%;max-width:760px;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#0a2138;border:1px solid var(--line);border-radius:8px 8px 0 0;padding:var(--pad);padding-bottom:calc(var(--pad) + var(--safe-b));animation:slideup .26s cubic-bezier(.2,.8,.2,1);}
 @keyframes slideup{from{transform:translateY(100%)}to{transform:none}}
-.modal-grip{width:40px;height:4px;border-radius:3px;background:var(--line);margin:0 auto 14px;}
-.modal-h{font-size:var(--fs-lg);font-weight:700;margin:0 0 16px;letter-spacing:.4px;}
-.divider{height:1px;background:var(--line);margin:16px 0;}
-.note-box{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;font-size:var(--fs-xs);color:var(--ink-sub);line-height:1.6;}
-.note-box b{color:var(--steel);}
+.modal-grip{width:36px;height:3px;border-radius:2px;background:var(--line);margin:0 auto 14px;}
+.modal-h{font-family:var(--serif);font-size:18px;font-weight:600;margin:0 0 16px;letter-spacing:.4px;}
+.divider{height:1px;background:var(--line-soft);margin:16px 0;}
+.note{background:var(--paper-3);border-left:2px solid var(--brass);border-radius:0 var(--radius) var(--radius) 0;padding:10px 12px;font-size:var(--fs-xs);color:var(--ink-sub);line-height:1.7;}
+.note b{color:var(--brass);font-weight:700;}
 .app-foot{text-align:center;padding:18px 0 6px;font-size:var(--fs-xs);color:var(--ink-dim);font-family:var(--mono);}
 </style>
 </head>
 <body>
 
-<header class="app-header">
-  <div class="hd-row">
-    <div class="hd-brand">
-      <div class="hd-spark"></div>
-      <div style="min-width:0">
-        <div class="hd-title">出来高ターミナル</div>
-        <div class="hd-sub">合同会社田渕溶接工業</div>
-      </div>
+<!-- ===== ICON SPRITE（単一ファイル内で完結） ===== -->
+<svg style="display:none" aria-hidden="true">
+  <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M4 17a8 8 0 1 1 16 0"/><path d="M12 17l4.5-5"/><circle cx="12" cy="17" r="1.2"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7.5h6.2l1.8 2H21v9.5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7.5z"/></symbol>
+  <symbol id="i-bars" viewBox="0 0 24 24"><path d="M5 19V10M12 19V5M19 19v-7"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21M5.8 5.8l1.6 1.6M16.6 16.6l1.6 1.6M18.2 5.8l-1.6 1.6M7.4 16.6l-1.6 1.6"/></symbol>
+  <symbol id="i-people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 19.5c0-3 2.5-5.2 5.5-5.2s5.5 2.2 5.5 5.2"/><circle cx="17.5" cy="9.5" r="2.3"/><path d="M15.3 19.5c.3-2 1.5-3.6 2.9-4.2"/></symbol>
+  <symbol id="i-building" viewBox="0 0 24 24"><path d="M4 21V9l8-4.5L20 9v12"/><path d="M9.5 21v-5.5h5V21"/></symbol>
+  <symbol id="i-clip" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="1"/><path d="M9 4V2.3h6V4"/><path d="M9 10.5h6M9 13.5h6M9 16.5h3.5"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3.5 2.5 20h19L12 3.5z"/><path d="M12 10v4"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+</svg>
+
+<!-- ===== TITLE BLOCK ===== -->
+<header class="titleblock">
+  <div class="tb-main">
+    <svg class="tb-mark" viewBox="0 0 32 32"><rect x="3" y="3" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7 23 L13.5 14 L17.5 19.5 L25 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="tb-name">
+      <div class="tb-co">出来高ターミナル</div>
+      <div class="tb-sub">合同会社田渕溶接工業</div>
     </div>
-    <div class="hd-status"><span class="dot" id="connDot"></span><span id="connText">接続中…</span></div>
+  </div>
+  <div class="tb-meta">
+    <div class="tb-field"><span class="tb-k">NO.</span><span class="tb-v">DKDK-001</span></div>
+    <div class="tb-field"><span class="tb-k">REV</span><span class="tb-v">v<span id="verNum">3</span></span></div>
+    <div class="tb-field"><span class="tb-k">通信</span><span class="tb-v"><span class="dot" id="connDot"></span><span id="connText">接続中</span></span></div>
   </div>
 </header>
 
 <main class="main">
 
-  <!-- ========== HOME (経営ダッシュ：人工ベース) ========== -->
+  <!-- ========== HOME（経営） ========== -->
   <section class="view active" id="view-home">
-    <div class="mnav">
-      <button onclick="shiftMonth(-1)" aria-label="前の月">‹</button>
-      <div class="m-label" id="mLabelHome">----年--月</div>
-      <button onclick="shiftMonth(1)" aria-label="次の月">›</button>
-    </div>
+    <div class="mnav"><button onclick="shiftMonth(-1)" aria-label="前の月">‹</button><div class="m-label" id="mLabelHome">----年--月</div><button onclick="shiftMonth(1)" aria-label="次の月">›</button></div>
     <div id="homeBody"><div class="loading"><span class="spin"></span>読み込み中</div></div>
   </section>
 
-  <!-- ========== ATTENDANCE (勤怠) ========== -->
+  <!-- ========== ATTENDANCE（勤怠） ========== -->
   <section class="view" id="view-att">
-    <div class="mnav">
-      <button onclick="shiftMonth(-1)" aria-label="前の月">‹</button>
-      <div class="m-label" id="mLabelAtt">----年--月</div>
-      <button onclick="shiftMonth(1)" aria-label="次の月">›</button>
-    </div>
+    <div class="mnav"><button onclick="shiftMonth(-1)" aria-label="前の月">‹</button><div class="m-label" id="mLabelAtt">----年--月</div><button onclick="shiftMonth(1)" aria-label="次の月">›</button></div>
     <div class="segment">
       <button id="segDay" class="on" onclick="setAttMode('day')">日付ごと</button>
       <button id="segGrid" onclick="setAttMode('grid')">月グリッド</button>
     </div>
+    <button class="link-btn" style="margin-bottom:var(--gap)" onclick="openImportModal()">
+      <svg class="icon" style="width:15px;height:15px"><use href="#i-clip"/></svg>まとめて貼り付けで登録
+    </button>
     <div id="attBody"><div class="loading"><span class="spin"></span>読み込み中</div></div>
   </section>
 
-  <!-- ========== JOBS (案件・日報) ========== -->
+  <!-- ========== JOBS（案件） ========== -->
   <section class="view" id="view-jobs">
-    <div class="sect-h"><span class="eyebrow">Jobs</span><h2>案件</h2></div>
-    <button class="btn-add" onclick="openJobEditor()">＋ 新しい案件を登録</button>
+    <div class="sect-h"><span class="eyebrow">JOBS</span><h2>案件</h2></div>
+    <button class="btn-add" onclick="openJobEditor()"><svg class="icon" style="width:15px;height:15px"><use href="#i-plus"/></svg>新しい案件を登録</button>
     <div id="jobsBody" style="margin-top:var(--gap)"><div class="loading"><span class="spin"></span>読み込み中</div></div>
   </section>
 
-  <!-- ========== SUMMARY (集計) ========== -->
+  <!-- ========== SUMMARY（集計） ========== -->
   <section class="view" id="view-sum">
-    <div class="mnav">
-      <button onclick="shiftMonth(-1)" aria-label="前の月">‹</button>
-      <div class="m-label" id="mLabelSum">----年--月</div>
-      <button onclick="shiftMonth(1)" aria-label="次の月">›</button>
-    </div>
+    <div class="mnav"><button onclick="shiftMonth(-1)" aria-label="前の月">‹</button><div class="m-label" id="mLabelSum">----年--月</div><button onclick="shiftMonth(1)" aria-label="次の月">›</button></div>
     <div id="sumBody"><div class="loading"><span class="spin"></span>読み込み中</div></div>
   </section>
 
-  <!-- ========== SETTINGS ========== -->
+  <!-- ========== SETTINGS（設定） ========== -->
   <section class="view" id="view-set">
-    <div class="sect-h"><span class="eyebrow">Sites</span><h2>現場の管理</h2></div>
-    <button class="btn-add" onclick="openSiteEditor()">＋ 現場を追加</button>
+    <div class="sect-h"><span class="eyebrow">SITES</span><h2>現場の管理</h2></div>
+    <button class="btn-add" onclick="openSiteEditor()"><svg class="icon" style="width:15px;height:15px"><use href="#i-plus"/></svg>現場を追加</button>
     <div id="sitesBody" style="margin-top:var(--gap)"></div>
 
-    <div class="sect-h" style="margin-top:24px"><span class="eyebrow">Members</span><h2>作業者の管理</h2></div>
-    <button class="btn-add" onclick="openMemberEditor()">＋ 作業者を追加</button>
+    <div class="sect-h" style="margin-top:24px"><span class="eyebrow">MEMBERS</span><h2>作業者の管理</h2></div>
+    <button class="btn-add" onclick="openMemberEditor()"><svg class="icon" style="width:15px;height:15px"><use href="#i-plus"/></svg>作業者を追加</button>
     <div id="membersBody" style="margin-top:var(--gap)"></div>
 
-    <div class="sect-h" style="margin-top:24px"><span class="eyebrow">Rates</span><h2>原価・税の設定</h2></div>
-    <div class="card">
+    <div class="sect-h" style="margin-top:24px"><span class="eyebrow">RATES</span><h2>原価・税の設定</h2></div>
+    <div class="panel">
       <div class="field"><label>法定福利費率（社会保険・会社負担分）</label>
         <div class="with-suffix"><input type="number" class="input num" id="setInsurance" inputmode="decimal" step="0.1" min="0" max="100"><span class="sfx">%</span></div>
         <div class="tiny dim" style="margin-top:6px">社保対象の作業者の人件費に上乗せ（残業割増分も含めて計算）。目安15〜16%</div></div>
@@ -302,24 +346,24 @@ input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink);}
         <div class="with-suffix"><input type="number" class="input num" id="setTax" inputmode="decimal" step="1" min="0" max="20"><span class="sfx">%</span></div></div>
       <button class="btn btn-primary btn-block" id="setSaveBtn" onclick="saveSettings()">設定を保存</button>
     </div>
-    <div class="card">
-      <div class="note-box">
+    <div class="panel">
+      <div class="note">
         <b>ベース売上</b> ＝（平常＋時間外）× 現場の人工単価。残業も売上は同単価。<br>
         <b>人件費</b> ＝ 時給×平常 ＋ 時給×残業倍率×時間外 ＋ 社保（残業割増含む）。<br>
         <b>粗利</b> ＝ ベース売上 − 人件費 −（材料・外注）。
       </div>
     </div>
-    <div class="app-foot">出来高ターミナル v<span id="verNum">2</span></div>
+    <div class="app-foot">DEKIDAKA TERMINAL — REV.<span id="verNum2">3</span></div>
   </section>
 
 </main>
 
 <nav class="tabbar">
-  <button class="tab active" data-tab="home" onclick="showTab('home')"><span class="ic">▦</span>経営</button>
-  <button class="tab" data-tab="att" onclick="showTab('att')"><span class="ic">◷</span>勤怠</button>
-  <button class="tab" data-tab="jobs" onclick="showTab('jobs')"><span class="ic">▤</span>案件</button>
-  <button class="tab" data-tab="sum" onclick="showTab('sum')"><span class="ic">▥</span>集計</button>
-  <button class="tab" data-tab="set" onclick="showTab('set')"><span class="ic">⚙</span>設定</button>
+  <button class="tab active" data-tab="home" onclick="showTab('home')"><svg class="icon"><use href="#i-gauge"/></svg>経営</button>
+  <button class="tab" data-tab="att" onclick="showTab('att')"><svg class="icon"><use href="#i-clock"/></svg>勤怠</button>
+  <button class="tab" data-tab="jobs" onclick="showTab('jobs')"><svg class="icon"><use href="#i-folder"/></svg>案件</button>
+  <button class="tab" data-tab="sum" onclick="showTab('sum')"><svg class="icon"><use href="#i-bars"/></svg>集計</button>
+  <button class="tab" data-tab="set" onclick="showTab('set')"><svg class="icon"><use href="#i-gear"/></svg>設定</button>
 </nav>
 
 <div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()"><div class="modal" id="modalBox"></div></div>
@@ -330,9 +374,9 @@ input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink);}
 /* ===================================================================
    CONFIG
 =================================================================== */
-const APP_VERSION = 2;
+const APP_VERSION = 3;
 const API_BASE = "https://dekidaka.tabuchi-welding.workers.dev";
-const CACHE_KEY = "dekidaka_cache_v2";
+const CACHE_KEY = "dekidaka_cache_v3";
 
 /* ===================================================================
    STATE
@@ -342,7 +386,7 @@ const state = {
   members:[], membersMap:{}, sites:[], sitesMap:{},
   jobs:[], month: ymNow(),
   attMode:"day", attData:{}, attGridMember:null, currentJobId:null,
-  loadedJobs:false, booted:false,
+  loadedJobs:false,
 };
 
 /* ===================================================================
@@ -365,7 +409,6 @@ function weekdayOf(ym,day){ const [y,m]=ym.split("-").map(Number); return new Da
 
 const STATUS = { estimate:{label:"見積",cls:"bd-estimate"}, progress:{label:"進行中",cls:"bd-progress"}, done:{label:"完成",cls:"bd-done"}, billed:{label:"請求済",cls:"bd-billed"}, paid:{label:"入金済",cls:"bd-paid"} };
 function statusBadge(s){ const x=STATUS[s]||STATUS.progress; return `<span class="badge ${x.cls}">${x.label}</span>`; }
-const EMP = { fulltime:"正社員", parttime:"その他" };
 
 /* ===================================================================
    API
@@ -384,25 +427,24 @@ async function api(action, body={}, timeout=15000){
     throw e;
   }finally{ clearTimeout(timer); }
 }
-function setConn(ok){ const d=$("connDot"),t=$("connText"); if(ok){d.className="dot on";t.textContent="接続OK";}else{d.className="dot off";t.textContent="未接続";} }
-function setBusy(){ $("connDot").className="dot busy"; $("connText").textContent="通信中…"; }
+function setConn(ok){ const d=$("connDot"),t=$("connText"); if(ok){d.className="dot on";t.textContent="正常";}else{d.className="dot off";t.textContent="未接続";} }
+function setBusy(){ $("connDot").className="dot busy"; $("connText").textContent="通信中"; }
 
 /* ===================================================================
-   TOAST / LOADING
+   TOAST / LOADING / EMPTY
 =================================================================== */
 let toastTimer=null;
 function toast(msg,type="ok"){ const el=$("toast"); el.className="toast "+type; el.textContent=msg; requestAnimationFrame(()=>el.classList.add("show")); clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove("show"),3200); }
 function loadingHTML(t="読み込み中"){ return `<div class="loading"><span class="spin"></span>${esc(t)}</div>`; }
-function emptyHTML(emoji,text){ return `<div class="empty"><div class="ee">${emoji}</div><div class="et">${esc(text)}</div></div>`; }
-function errHTML(msg,retryFn){ return `<div class="card"><div class="empty"><div class="ee">⚠️</div><div class="et">${esc(msg)}</div><button class="btn btn-primary btn-sm" style="margin-top:14px" onclick="${retryFn}">再試行</button></div></div>`; }
+function emptyHTML(icon,text){ return `<div class="empty"><svg class="icon"><use href="#i-${icon}"/></svg><div class="et">${esc(text)}</div></div>`; }
+function errHTML(msg,retryFn){ return `<div class="panel"><div class="empty"><svg class="icon" style="color:var(--rust)"><use href="#i-warn"/></svg><div class="et">${esc(msg)}</div><button class="btn btn-primary btn-sm" style="margin-top:14px" onclick="${retryFn}">再試行</button></div></div>`; }
 
 /* ===================================================================
-   計算コア（純粋関数・DOMに触れない）
+   計算コア（純粋関数・v2から無変更）
 =================================================================== */
 function memberSite(m){ return state.sitesMap[m.site_id] || {unit_price:0, overtime_mult:1.25, name:"未設定"}; }
 function chargeRate(wage, insured){ const ins=insured?num(state.settings.insurance_rate)/100:0; const oh=num(state.settings.overhead_rate)/100; return Math.round(num(wage)*(1+ins+oh)); }
 
-// 勤怠（平常・時間外）→ そのメンバーの売上・人件費・粗利
 function calcPayroll(member, normalHours, otHours){
   const site=memberSite(member);
   const wage=num(member.hourly_wage);
@@ -420,8 +462,6 @@ function calcPayroll(member, normalHours, otHours){
     basePay:Math.round(basePay), welfare:Math.round(welfare), laborCost, sales, profit:sales-laborCost,
     unitPrice:num(site.unit_price), otMult };
 }
-
-// 案件採算
 function calcJob(job, logs){
   let laborRaw=0, insuredLabor=0, hours=0;
   for(const l of (logs||[])){
@@ -439,13 +479,16 @@ function calcJob(job, logs){
   const profit=amountExcl-totalCost;
   return {laborRaw,welfare,material,outsource,totalCost,amountExcl,taxRate,tax,amountIncl:amountExcl+tax,profit,profitRate:pctOf(profit,amountExcl),hours:Math.round(hours*100)/100,hourlyProfit:hours>0?Math.round(profit/hours):0};
 }
-
 function meterHTML(profitRate){
   const r=clamp(num(profitRate),-100,100); const w=Math.abs(r)/100*50;
   let bar = r>=0
     ? `<div class="meter-fill pos" style="width:${w}%"></div><div class="meter-val" style="left:calc(50% + 4px)">${r.toFixed(0)}%</div>`
     : `<div class="meter-fill neg" style="width:${w}%"></div><div class="meter-val" style="right:calc(50% + 4px)">${r.toFixed(0)}%</div>`;
-  return `<div class="meter"><div class="meter-track"><div class="meter-zero"></div>${bar}</div><div class="meter-scale"><span>-100%</span><span>粗利率</span><span>+100%</span></div></div>`;
+  return `<div class="meter-track"><div class="meter-zero"></div>${bar}</div><div class="meter-scale"><span>-100%</span><span>粗利率</span><span>+100%</span></div>`;
+}
+function dimfigHTML(value, label, isProfit){
+  const cls = isProfit ? (value>=0?"pos":"neg") : "";
+  return `<div class="dimfig"><span class="v ${cls}">${yen(value)}</span></div><div class="dimline"></div><div class="dimlabel" style="text-align:center">${esc(label)}</div>`;
 }
 
 /* ===================================================================
@@ -474,7 +517,7 @@ function shiftMonth(d){
 =================================================================== */
 async function boot(){
   try{ const c=JSON.parse(localStorage.getItem(CACHE_KEY)||"null"); if(c&&c.settings) Object.assign(state.settings,c.settings); }catch(_){}
-  $("verNum").textContent=APP_VERSION; setBusy(); updateMonthLabels();
+  setBusy(); updateMonthLabels();
   try{
     const s=await api("settings.get");
     Object.assign(state.settings,{
@@ -484,7 +527,7 @@ async function boot(){
     });
     const si=await api("sites.list"); state.sites=si.sites||[]; rebuildSitesMap();
     const m=await api("members.list"); state.members=m.members||[]; rebuildMembersMap();
-    saveCache(); state.booted=true; renderHome();
+    saveCache(); renderHome();
   }catch(e){ $("homeBody").innerHTML=errHTML("サーバーに接続できませんでした：" + e.message, "boot()"); }
 }
 function rebuildMembersMap(){ state.membersMap={}; for(const m of state.members) state.membersMap[m.id]=m; }
@@ -493,13 +536,12 @@ function saveCache(){ try{ localStorage.setItem(CACHE_KEY,JSON.stringify({settin
 function activeMembers(){ return state.members.filter(m=>m.active!==0); }
 
 /* ===================================================================
-   HOME（経営ダッシュ：人工ベース）
+   HOME（経営：人工ベース）
 =================================================================== */
 async function renderHome(){
   updateMonthLabels(); const body=$("homeBody"); body.innerHTML=loadingHTML();
   try{
     const r=await api("summary.payroll",{month:state.month});
-    // 最新のメンバー・現場で再構成（stateを更新）
     if(r.members){ state.members=r.members; rebuildMembersMap(); }
     if(r.sites){ state.sites=r.sites; rebuildSitesMap(); }
     const rows=r.rows||[];
@@ -510,35 +552,32 @@ async function renderHome(){
       const n=num(row.normal_hours), o=num(row.ot_hours);
       const c=calcPayroll(m,n,o);
       tSales+=c.sales; tLabor+=c.laborCost; tProfit+=c.profit; tN+=n; tO+=o;
-      per.push({name:m.name, days:num(row.work_days), ...c});
+      per.push({name:m.name, employment:m.employment, insured:m.insured, days:num(row.work_days), ...c});
     }
     const rate=pctOf(tProfit,tSales);
 
-    let h="";
-    h+=`<div class="stat-grid">`;
-    h+=`<div class="stat span2"><div class="edge"></div><div class="lab">▲ ベース売上（人工）</div>
-      <div class="big">${yen(tSales)}</div><div class="sub">総工数 ${(Math.round((tN+tO)*10)/10).toLocaleString("ja-JP")}h（平常 ${tN} ＋ 残業 ${tO}）</div></div>`;
-    h+=`<div class="stat"><div class="edge" style="background:var(--spark)"></div><div class="lab">人件費（社保込）</div>
-      <div class="big" style="font-size:22px;color:var(--spark)">${yen(tLabor)}</div></div>`;
-    h+=`<div class="stat ${tProfit>=0?'good':'bad'}"><div class="edge"></div><div class="lab">粗利</div>
-      <div class="big" style="font-size:22px">${yen(tProfit)}</div><div class="sub">粗利率 ${rate.toFixed(1)}%</div></div>`;
-    h+=`</div>`;
+    let h=`<div class="panel frame">${dimfigHTML(tSales,"BASE SALES ／ ベース売上(人工)",false)}
+      <div class="tiny dim" style="text-align:center;margin-top:2px">総工数 ${(Math.round((tN+tO)*10)/10).toLocaleString("ja-JP")}h（平常${tN}＋残業${tO}）</div></div>`;
 
-    h+=`<div class="card" style="margin-top:var(--gap)">${meterHTML(rate)}</div>`;
+    h+=`<div class="kpi-grid">
+      <div class="kpi"><div class="lab">人件費（社保込）</div><div class="big">${yen(tLabor)}</div></div>
+      <div class="kpi"><div class="lab">粗利</div><div class="big ${tProfit>=0?'pos':'neg'}">${yen(tProfit)}</div><div class="sub">粗利率 ${rate.toFixed(1)}%</div></div>
+    </div>`;
 
-    h+=`<div class="card"><div class="sect-h"><span class="eyebrow">By member</span><h2>作業者別の損益</h2></div>`;
-    if(per.length===0){ h+=emptyHTML("◷","この月の勤怠はまだありません。「勤怠」タブから入力してください"); }
+    h+=`<div class="panel">${meterHTML(rate)}</div>`;
+
+    h+=`<div class="panel"><div class="sect-h"><span class="eyebrow">BY MEMBER</span><h2>作業者別の損益</h2></div>`;
+    if(per.length===0){ h+=emptyHTML("clock","この月の勤怠はまだありません。「勤怠」タブから入力してください"); }
     else{
       const maxS=Math.max(...per.map(p=>p.sales),1);
       for(const p of per.sort((a,b)=>b.sales-a.sales)){
-        const pcls=p.profit>=0?"pos":"neg";
         h+=`<div class="bar-item">
           <div class="bar-head"><span class="bn">${esc(p.name)} <span class="dim tiny">${p.days}日 / ${hrs(p.normalHours+p.otHours)}</span></span>
             <span class="bv">売上 ${yen(p.sales)}</span></div>
           <div class="bar-track"><div class="bar-fill profit" style="width:${p.sales/maxS*100}%"></div></div>
           <div class="tiny dim" style="margin-top:4px;display:flex;justify-content:space-between">
             <span>人件費 ${yen(p.laborCost)}</span>
-            <span style="color:var(--${pcls==='pos'?'profit':'loss'})">粗利 ${yen(p.profit)}</span></div>
+            <span style="color:var(--${p.profit>=0?'verdigris':'rust'})">粗利 ${yen(p.profit)}</span></div>
         </div>`;
       }
     }
@@ -566,21 +605,18 @@ async function renderAtt(){
   try{
     if(state.members.length===0){ const m=await api("members.list"); state.members=m.members||[]; rebuildMembersMap(); }
     await loadAttData();
-    if(activeMembers().length===0){ body.innerHTML=emptyHTML("👷","作業者が未登録です。「設定」タブから追加してください"); return; }
+    if(activeMembers().length===0){ body.innerHTML=emptyHTML("people","作業者が未登録です。「設定」タブから追加してください"); return; }
     if(state.attMode==="day") renderAttDay(); else renderAttGrid();
   }catch(e){ body.innerHTML=errHTML(e.message,"renderAtt()"); }
 }
-
-// 日付ごと：日付選択→全員の平常/時間外
 function renderAttDay(){
   const body=$("attBody");
-  if(!state._attDay) state._attDay=todayStr().slice(0,7)===state.month ? todayStr() : dateStr(state.month,1);
-  if(state._attDay.slice(0,7)!==state.month) state._attDay=dateStr(state.month,1);
+  if(!state._attDay || state._attDay.slice(0,7)!==state.month) state._attDay=(todayStr().slice(0,7)===state.month) ? todayStr() : dateStr(state.month,1);
   const d=state._attDay;
-  let h=`<div class="card">
+  let h=`<div class="panel">
     <div class="field" style="margin-bottom:14px"><label>日付</label>
       <input type="date" class="input" id="attDayDate" value="${d}" min="${dateStr(state.month,1)}" max="${dateStr(state.month,daysInMonth(state.month))}" onchange="onAttDayDate()"></div>
-    <div class="att-name-row" style="border-bottom:1px solid var(--line)"><div class="nm dim tiny" style="font-weight:700">作業者</div><div class="dim tiny c" style="text-align:center;font-weight:700">平常</div><div class="dim tiny c" style="text-align:center;font-weight:700">時間外</div></div>`;
+    <div class="att-name-row" style="border-bottom:1px solid var(--line)"><div class="nm dim tiny" style="font-weight:700">作業者</div><div class="dim tiny" style="text-align:center;font-weight:700">平常</div><div class="dim tiny" style="text-align:center;font-weight:700">時間外</div></div>`;
   for(const m of activeMembers()){
     const k=m.id+"|"+d; const v=state.attData[k]||{n:"",o:""};
     h+=`<div class="att-name-row">
@@ -595,26 +631,22 @@ function renderAttDay(){
 }
 function onAttDayDate(){ state._attDay=$("attDayDate").value; renderAttDay(); }
 async function saveAttDay(){
-  const d=$("attDayDate").value; const rows=[];
-  document.querySelectorAll('#attBody .att-name-row .att-cell').forEach(()=>{});
-  const map={};
+  const d=$("attDayDate").value; const map={};
   document.querySelectorAll('#attBody .att-cell').forEach(inp=>{
     const id=inp.dataset.m, f=inp.dataset.f; map[id]=map[id]||{n:0,o:0}; map[id][f]=clamp(num(inp.value),0,24);
   });
-  for(const id in map){ rows.push({member_id:Number(id),work_date:d,normal_hours:map[id].n,ot_hours:map[id].o}); }
+  const rows=Object.keys(map).map(id=>({member_id:Number(id),work_date:d,normal_hours:map[id].n,ot_hours:map[id].o}));
   const btn=$("attDaySave"); btn.disabled=true; btn.textContent="保存中…";
   try{ const r=await api("att.saveBulk",{rows}); toast(`${d} を保存（${r.saved}件）`,"ok"); await loadAttData(); }
   catch(e){ toast(e.message,"err"); }
   finally{ btn.disabled=false; btn.textContent="この日を保存"; }
 }
-
-// 月グリッド：作業者選択→月の各日
 function renderAttGrid(){
   const body=$("attBody");
   const ams=activeMembers();
   if(!state.attGridMember || !state.membersMap[state.attGridMember] || state.membersMap[state.attGridMember].active===0) state.attGridMember=ams[0].id;
   const mid=state.attGridMember; const dim=daysInMonth(state.month);
-  let h=`<div class="card">
+  let h=`<div class="panel">
     <div class="field" style="margin-bottom:14px"><label>作業者</label>
       <select class="select" id="attGridSel" onchange="onAttGridSel()">
         ${ams.map(m=>`<option value="${m.id}" ${m.id===mid?"selected":""}>${esc(m.name)}</option>`).join("")}</select></div>
@@ -629,7 +661,6 @@ function renderAttGrid(){
       <input type="number" inputmode="decimal" step="0.25" min="0" max="24" class="att-cell ot" data-d="${ds}" data-f="o" value="${v.o===0?'':esc(v.o)}" placeholder="0">
     </div>`;
   }
-  // 合計プレビュー
   h+=`<div class="kv total" style="margin-top:14px"><span class="k">この入力の合計</span><span class="v"><span id="attGridSum">—</span></span></div>`;
   h+=`<button class="btn btn-primary btn-block" id="attGridSave" style="margin-top:14px" onclick="saveAttGrid()">この月を保存</button>
     <div class="tiny dim" style="margin-top:10px">空欄＝記録なし。土日は色付き。</div></div>`;
@@ -654,6 +685,67 @@ async function saveAttGrid(){
 }
 
 /* ===================================================================
+   勤怠 まとめて貼り付け（CSV風インポート）
+   形式: 名前,日付(YYYY-MM-DD),平常,時間外   ※カンマまたはタブ区切り、1行1件
+   写真からの読み取りはチャットでClaudeに依頼→この形式で出力してもらい貼り付ける運用
+=================================================================== */
+function openImportModal(){
+  let h=`<div class="modal-grip"></div><div class="modal-h">まとめて貼り付けで登録</div>
+    <div class="note" style="margin-bottom:14px">1行に1件、<b>名前,日付,平常,時間外</b> の順で貼り付けてください（カンマまたはタブ区切り）。<br>
+    例：<span class="num">菅原,2026-05-07,8,2</span><br>
+    勤怠表の写真をチャットでClaudeに送ると、この形式のテキストを作成できます。</div>
+    <div class="field"><textarea class="textarea" id="impText" rows="8" placeholder="菅原,2026-05-07,8,2&#10;松川,2026-05-07,8,2&#10;..."></textarea></div>
+    <button class="btn btn-ghost btn-block" onclick="previewImport()">内容を確認する</button>
+    <div id="impPreview" style="margin-top:14px"></div>`;
+  openModalRaw(h);
+}
+function parseImportText(text){
+  const lines=text.split(/\r?\n/).map(l=>l.trim()).filter(l=>l);
+  const rows=[];
+  for(const line of lines){
+    const parts=line.split(/[,\t]/).map(s=>s.trim());
+    if(parts.length<3) { rows.push({raw:line,error:"列が不足しています（名前,日付,平常,[時間外]）"}); continue; }
+    const [name,date,nStr,oStr]=parts;
+    const normal=num(nStr,NaN), ot=oStr!==undefined?num(oStr,0):0;
+    const dateOk=/^\d{4}-\d{2}-\d{2}$/.test(date);
+    const member=state.members.find(m=>m.name===name) || state.members.find(m=>m.name.trim()===name.trim());
+    let error=null;
+    if(!member) error="作業者「"+name+"」が見つかりません";
+    else if(!dateOk) error="日付の形式が不正です（YYYY-MM-DD）";
+    else if(isNaN(normal)) error="平常時間が数値ではありません";
+    rows.push({raw:line,name,date,normal:isNaN(normal)?0:clamp(normal,0,24),ot:clamp(ot,0,24),member,error});
+  }
+  return rows;
+}
+function previewImport(){
+  const text=$("impText").value;
+  const rows=parseImportText(text);
+  const box=$("impPreview");
+  if(rows.length===0){ box.innerHTML=`<div class="tiny dim">貼り付け内容がありません</div>`; return; }
+  const okRows=rows.filter(r=>!r.error);
+  let h=`<div class="panel">`;
+  for(const r of rows){
+    if(r.error) h+=`<div class="imp-row"><span class="bad">${esc(r.raw)}</span><span class="bad tiny" style="grid-column:1/-1">⚠ ${esc(r.error)}</span></div>`;
+    else h+=`<div class="imp-row"><span>${esc(r.name)}・${esc(r.date)}</span><span class="num">平常${r.normal}</span><span class="num">残業${r.ot}</span><span class="ok">✓</span></div>`;
+  }
+  h+=`</div><div class="tiny dim" style="margin-bottom:10px">有効 ${okRows.length}件 ／ エラー ${rows.length-okRows.length}件</div>`;
+  h+=`<button class="btn btn-primary btn-block" id="impCommit" onclick="commitImport()" ${okRows.length===0?"disabled":""}>${okRows.length}件を登録する</button>`;
+  box.innerHTML=h;
+  state._impRows=okRows;
+}
+async function commitImport(){
+  const rows=(state._impRows||[]).map(r=>({member_id:r.member.id,work_date:r.date,normal_hours:r.normal,ot_hours:r.ot}));
+  if(rows.length===0) return;
+  const btn=$("impCommit"); btn.disabled=true; btn.textContent="登録中…";
+  try{
+    const r=await api("att.saveBulk",{rows});
+    toast(`${r.saved}件を登録しました`,"ok");
+    closeModal();
+    if($("view-att").classList.contains("active")) renderAtt();
+  }catch(e){ toast(e.message,"err"); btn.disabled=false; btn.textContent=rows.length+"件を登録する"; }
+}
+
+/* ===================================================================
    JOBS
 =================================================================== */
 async function loadJobs(force){
@@ -665,20 +757,20 @@ async function loadJobs(force){
 }
 function renderJobs(){
   const body=$("jobsBody");
-  if(state.jobs.length===0){ body.innerHTML=emptyHTML("🗂","案件がありません。上のボタンから登録してください"); return; }
+  if(state.jobs.length===0){ body.innerHTML=emptyHTML("folder","案件がありません。上のボタンから登録してください"); return; }
   let html="";
   for(const j of state.jobs){
     const labor=Math.round(num(j.labor_cost_raw));
     const welfare=Math.round(num(j.labor_cost_raw)*num(state.settings.insurance_rate)/100);
     const cost=labor+welfare+Math.round(num(j.material_cost))+Math.round(num(j.outsource_cost));
-    const profit=Math.round(num(j.amount_excl))-cost; const rate=pctOf(profit,num(j.amount_excl)); const pcls=profit>=0?"profit":"loss";
-    html+=`<div class="card card-tap job-row" onclick="openJobDetail(${j.id})">
+    const profit=Math.round(num(j.amount_excl))-cost; const rate=pctOf(profit,num(j.amount_excl));
+    html+=`<div class="panel panel-tap job-row" onclick="openJobDetail(${j.id})">
       <div class="job-top"><span class="job-name">${esc(j.name)}</span>${statusBadge(j.status)}</div>
       ${j.client?`<div class="job-client">${esc(j.client)}</div>`:""}
       <div class="job-figs">
         <div><div class="fk">請求(税抜)</div><div class="fv">${yen(j.amount_excl)}</div></div>
         <div><div class="fk">工数</div><div class="fv">${hrs(j.total_hours)}</div></div>
-        <div><div class="fk">粗利(概算)</div><div class="fv" style="color:var(--${pcls})">${yen(profit)}</div></div>
+        <div><div class="fk">粗利(概算)</div><div class="fv" style="color:var(--${profit>=0?'verdigris':'rust'})">${yen(profit)}</div></div>
       </div>${meterHTML(rate)}</div>`;
   }
   body.innerHTML=html;
@@ -686,52 +778,49 @@ function renderJobs(){
 async function openJobDetail(id){
   state.currentJobId=id; openModalRaw(loadingHTML("案件を読み込み中"));
   try{ const r=await api("jobs.get",{id}); renderJobDetail(r.job,r.tasks||[],r.logs||[]); }
-  catch(e){ openModalRaw(`<div class="empty"><div class="ee">⚠️</div><div class="et">${esc(e.message)}</div></div>`); }
+  catch(e){ openModalRaw(`<div class="empty"><svg class="icon" style="color:var(--rust)"><use href="#i-warn"/></svg><div class="et">${esc(e.message)}</div></div>`); }
 }
 function renderJobDetail(job,tasks,logs){
   const c=calcJob(job,logs); const pcls=c.profit>=0?"pos":"neg";
   let h=`<div class="modal-grip"></div>
     <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:6px"><div class="modal-h" style="flex:1;margin:0">${esc(job.name)}</div>${statusBadge(job.status)}</div>`;
   if(job.client) h+=`<div class="muted small" style="margin-bottom:14px">${esc(job.client)}</div>`;
-  h+=`<div class="card" style="margin-bottom:14px">${meterHTML(c.profitRate)}</div>`;
-  h+=`<div class="card"><div class="sect-h"><span class="eyebrow">収支</span><h2>採算の内訳</h2></div>
+  h+=`<div class="panel frame">${meterHTML(c.profitRate)}</div>`;
+  h+=`<div class="panel"><div class="sect-h"><span class="eyebrow">P/L</span><h2>採算の内訳</h2></div>
     <div class="kv"><span class="k">請求額（税抜）</span><span class="v">${yen(c.amountExcl)}</span></div>
     <div class="kv"><span class="k">消費税（${c.taxRate}%）</span><span class="v">${yen(c.tax)}</span></div>
     <div class="kv"><span class="k">請求額（税込）</span><span class="v">${yen(c.amountIncl)}</span></div>
-    <div class="divider" style="margin:10px 0"></div>
+    <div class="divider"></div>
     <div class="kv"><span class="k">直接労務費</span><span class="v">${yen(c.laborRaw)}</span></div>
     <div class="kv"><span class="k">法定福利費</span><span class="v">${yen(c.welfare)}</span></div>
     <div class="kv"><span class="k">材料費</span><span class="v">${yen(c.material)}</span></div>
     <div class="kv"><span class="k">外注費</span><span class="v">${yen(c.outsource)}</span></div>
     <div class="kv"><span class="k">総原価</span><span class="v">${yen(c.totalCost)}</span></div>
     <div class="kv total"><span class="k">粗利（税抜ベース）</span><span class="v ${pcls}">${yen(c.profit)}</span></div></div>`;
-  h+=`<div class="stat-grid">
-    <div class="stat ${c.profit>=0?'good':'bad'}"><div class="edge"></div><div class="lab">粗利率</div><div class="big" style="font-size:26px">${c.profitRate.toFixed(1)}<span class="unit">%</span></div></div>
-    <div class="stat"><div class="edge"></div><div class="lab">時間採算</div><div class="big" style="font-size:22px">${yen(c.hourlyProfit)}</div><div class="sub">1時間あたり粗利</div></div>
-    <div class="stat span2"><div class="edge"></div><div class="lab">投入工数</div><div class="big" style="font-size:22px">${hrs(c.hours)}</div></div></div>`;
-  // 工程
-  h+=`<div class="card"><div class="sect-h"><span class="eyebrow">工程</span><h2>工程</h2></div>`;
+  h+=`<div class="kpi-grid">
+    <div class="kpi"><div class="lab">粗利率</div><div class="big ${c.profit>=0?'pos':'neg'}">${c.profitRate.toFixed(1)}%</div></div>
+    <div class="kpi"><div class="lab">時間採算</div><div class="big">${yen(c.hourlyProfit)}</div><div class="sub">1時間あたり粗利</div></div>
+    <div class="kpi span2"><div class="lab">投入工数</div><div class="big">${hrs(c.hours)}</div></div></div>`;
+  h+=`<div class="panel" style="margin-top:var(--gap)"><div class="sect-h"><span class="eyebrow">PROCESS</span><h2>工程</h2></div>`;
   if(tasks.length===0){ h+=`<div class="tiny dim" style="padding:6px 0 12px">工程は未登録です</div>`; }
   else{ const byT={}; for(const l of logs){ if(l.task_id) byT[l.task_id]=(byT[l.task_id]||0)+num(l.hours); }
     for(const t of tasks){ h+=`<div class="line-item"><div class="li-main"><div class="li-title">${esc(t.name)}</div><div class="li-sub">予定 ${hrs(t.planned_hours)} ／ 実績 ${hrs(byT[t.id]||0)}</div></div></div>`; } }
-  h+=`<button class="btn-add btn-sm" style="margin-top:8px" onclick="openTaskEditor(${job.id})">＋ 工程を編集</button></div>`;
-  // 作業記録
-  h+=`<div class="card"><div class="sect-h"><span class="eyebrow">履歴</span><h2>作業記録（${logs.length}件）</h2></div>`;
+  h+=`<button class="btn-add btn-sm" style="margin-top:8px" onclick="openTaskEditor(${job.id})"><svg class="icon" style="width:14px;height:14px"><use href="#i-plus"/></svg>工程を編集</button></div>`;
+  h+=`<div class="panel"><div class="sect-h"><span class="eyebrow">LOG</span><h2>作業記録（${logs.length}件）</h2></div>`;
   if(logs.length===0){ h+=`<div class="tiny dim" style="padding:6px 0">まだ記録がありません</div>`; }
   else{ for(const l of logs.slice(0,30)){ const m=state.membersMap[l.member_id]; const w=m?num(m.hourly_wage):0;
     h+=`<div class="line-item"><div class="li-main"><div class="li-title">${esc(l.member_name||(m?m.name:"?"))} ・ ${hrs(l.hours)}</div><div class="li-sub">${esc(l.work_date)}${l.task_name?" ・ "+esc(l.task_name):""}${l.note?" ・ "+esc(l.note):""}</div></div><span class="li-val">${yen(num(l.hours)*w)}</span><button class="li-x" onclick="delLog(${l.id})">×</button></div>`; }
     if(logs.length>30) h+=`<div class="tiny dim" style="margin-top:8px">直近30件を表示</div>`; }
-  h+=`<button class="btn-add btn-sm" style="margin-top:8px" onclick="openLogEditor(${job.id})">＋ 作業を記録（案件別）</button></div>`;
+  h+=`<button class="btn-add btn-sm" style="margin-top:8px" onclick="openLogEditor(${job.id})"><svg class="icon" style="width:14px;height:14px"><use href="#i-plus"/></svg>作業を記録（案件別）</button></div>`;
   h+=`<div class="btn-row" style="margin-top:4px"><button class="btn btn-ghost" onclick='openJobEditor(${JSON.stringify(job).replace(/'/g,"&#39;")})'>編集</button><button class="btn btn-danger" onclick="delJob(${job.id})">削除</button></div>
     <button class="btn btn-ghost btn-block" style="margin-top:10px" onclick="closeModal()">閉じる</button>`;
   $("modalBox").innerHTML=h;
 }
-
 function openJobEditor(job){
   const j=job||{name:"",client:"",amount_excl:"",tax_rate:state.settings.default_tax_rate,material_cost:"",outsource_cost:"",status:"progress",due_date:"",note:""};
   const isEdit=!!(job&&job.id);
   let h=`<div class="modal-grip"></div><div class="modal-h">${isEdit?"案件を編集":"新しい案件"}</div>
-    <div class="field"><label>案件名 <span style="color:var(--loss)">*</span></label><input type="text" class="input" id="jeName" value="${esc(j.name)}" placeholder="例：A工場 架台製作"></div>
+    <div class="field"><label>案件名 <span style="color:var(--rust)">*</span></label><input type="text" class="input" id="jeName" value="${esc(j.name)}" placeholder="例：A工場 架台製作"></div>
     <div class="field"><label>客先</label><input type="text" class="input" id="jeClient" value="${esc(j.client)}" placeholder="例：○○建設"></div>
     <div class="field"><label>請求額（税抜）</label><div class="with-suffix"><input type="number" class="input num" id="jeAmount" inputmode="numeric" value="${esc(j.amount_excl)}" placeholder="0"><span class="sfx">円</span></div></div>
     <div class="row2"><div class="field"><label>消費税率</label><div class="with-suffix"><input type="number" class="input num" id="jeTax" inputmode="decimal" value="${esc(j.tax_rate)}" step="1"><span class="sfx">%</span></div></div>
@@ -755,7 +844,6 @@ async function saveJob(id){
 async function delJob(id){ if(!confirm("この案件を削除します。工程・作業記録もすべて消えます。よろしいですか？")) return;
   try{ await api("jobs.delete",{id}); toast("案件を削除しました","ok"); closeModal(); await loadJobs(true); }catch(e){ toast(e.message,"err"); } }
 
-// 案件別 作業記録（任意）
 function openLogEditor(jobId){
   const ams=activeMembers();
   let h=`<div class="modal-grip"></div><div class="modal-h">作業を記録</div>
@@ -765,7 +853,7 @@ function openLogEditor(jobId){
     <div class="field"><label>メモ（任意）</label><textarea class="textarea" id="leNote" placeholder="作業内容"></textarea></div>
     <button class="btn btn-primary btn-block" id="leSave" onclick="saveLogEntry(${jobId})">記録する</button>
     <button class="btn btn-ghost btn-block" style="margin-top:10px" onclick="openJobDetail(${jobId})">戻る</button>
-    <div class="note-box" style="margin-top:12px">この記録は案件別の採算用です。給与・人工売上は「勤怠」タブが正です。</div>`;
+    <div class="note" style="margin-top:12px">この記録は案件別の採算用です。給与・人工売上は「勤怠」タブが正です。</div>`;
   openModalRaw(h);
 }
 async function saveLogEntry(jobId){
@@ -787,10 +875,10 @@ async function openTaskEditor(jobId){
 }
 function renderTaskEditor(jobId,tasks){
   let h=`<div class="modal-grip"></div><div class="modal-h">工程の編集</div>
-    <div class="note-box" style="margin-bottom:14px">工程名と予定工数を入力。行を空にして保存するとその工程は削除（作業記録がある工程は残ります）。</div><div id="taskRows">`;
+    <div class="note" style="margin-bottom:14px">工程名と予定工数を入力。行を空にして保存するとその工程は削除（作業記録がある工程は残ります）。</div><div id="taskRows">`;
   const list=tasks.length?tasks:[{name:"",planned_hours:""}];
   for(const t of list) h+=taskRowHTML(t);
-  h+=`</div><button class="btn-add btn-sm" onclick="addTaskRow()">＋ 行を追加</button>
+  h+=`</div><button class="btn-add btn-sm" onclick="addTaskRow()"><svg class="icon" style="width:14px;height:14px"><use href="#i-plus"/></svg>行を追加</button>
     <button class="btn btn-primary btn-block" id="tkSave" style="margin-top:14px" onclick="saveTasks(${jobId})">工程を保存</button>
     <button class="btn btn-ghost btn-block" style="margin-top:10px" onclick="openJobDetail(${jobId})">戻る</button>`;
   openModalRaw(h);
@@ -808,7 +896,7 @@ async function saveTasks(jobId){
 }
 
 /* ===================================================================
-   SUMMARY（集計）：勤怠ベース（人工） ＋ 案件別
+   SUMMARY
 =================================================================== */
 async function renderSum(){
   updateMonthLabels(); const body=$("sumBody"); body.innerHTML=loadingHTML();
@@ -823,28 +911,27 @@ async function renderSum(){
       tSales+=c.sales; tLabor+=c.laborCost; tProfit+=c.profit; tN+=n; tO+=o;
       per.push({m,days:num(row.work_days),...c}); }
 
-    let h=`<div class="card"><div class="sect-h"><span class="eyebrow">${esc(ymLabel(state.month))}</span><h2>当月の損益（人工ベース）</h2></div>
+    let h=`<div class="panel"><div class="sect-h"><span class="eyebrow">${esc(ymLabel(state.month))}</span><h2>当月の損益（人工ベース）</h2></div>
       <div class="kv"><span class="k">ベース売上（人工）</span><span class="v">${yen(tSales)}</span></div>
       <div class="kv"><span class="k">人件費（社保込・残業割増込）</span><span class="v">${yen(tLabor)}</span></div>
       <div class="kv total"><span class="k">粗利</span><span class="v ${tProfit>=0?'pos':'neg'}">${yen(tProfit)}</span></div>
       <div class="kv"><span class="k">粗利率</span><span class="v">${pctOf(tProfit,tSales).toFixed(1)}%</span></div>
       <div class="kv"><span class="k">総工数</span><span class="v">${hrs(tN+tO)}（平常${tN}＋残業${tO}）</span></div></div>`;
 
-    h+=`<div class="card"><div class="sect-h"><span class="eyebrow">By member</span><h2>作業者別の明細</h2></div>`;
-    if(per.length===0){ h+=emptyHTML("◷","この月の勤怠はありません"); }
+    h+=`<div class="panel"><div class="sect-h"><span class="eyebrow">BY MEMBER</span><h2>作業者別の明細</h2></div>`;
+    if(per.length===0){ h+=emptyHTML("clock","この月の勤怠はありません"); }
     else{ for(const p of per.sort((a,b)=>b.sales-a.sales)){
       h+=`<div style="padding:11px 0;border-bottom:1px solid var(--line-soft)">
         <div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline">
           <span style="font-weight:600">${esc(p.m.name)}${p.m.employment==='fulltime'?' <span class="chip ft">正社員</span>':''}${p.m.insured?'':' <span class="chip">社保外</span>'}</span>
-          <span class="num small" style="color:var(--${p.profit>=0?'profit':'loss'});font-weight:700">粗利 ${yen(p.profit)}</span></div>
+          <span class="num small" style="color:var(--${p.profit>=0?'verdigris':'rust'});font-weight:700">粗利 ${yen(p.profit)}</span></div>
         <div class="tiny dim" style="margin-top:4px">${p.days}日 / 平常${p.normalHours}h 残業${p.otHours}h ・ 単価¥${p.unitPrice.toLocaleString()}</div>
         <div class="tiny" style="margin-top:3px;display:flex;justify-content:space-between"><span class="dim">売上 ${yen(p.sales)}</span><span class="dim">人件費 ${yen(p.laborCost)}（社保 ${yen(p.welfare)}）</span></div></div>`;
     } }
     h+=`</div>`;
 
-    // 案件別（参考・概算）
     const sm=await api("summary.month",{month:state.month}); const byJob=sm.byJob||[];
-    h+=`<div class="card"><div class="sect-h"><span class="eyebrow">By job</span><h2>案件別の稼働（参考）</h2></div>`;
+    h+=`<div class="panel"><div class="sect-h"><span class="eyebrow">BY JOB</span><h2>案件別の稼働（参考）</h2></div>`;
     if(byJob.length===0){ h+=`<div class="tiny dim" style="padding:6px 0">この月の案件稼働はありません</div>`; }
     else{ for(const j of byJob.sort((a,b)=>num(b.hours)-num(a.hours))){
       h+=`<div class="line-item"><div class="li-main"><div class="li-title">${esc(j.job_name)}</div><div class="li-sub">${hrs(j.hours)} ・ 請求 ${yen(j.amount_excl)}</div></div></div>`; }
@@ -855,7 +942,7 @@ async function renderSum(){
 }
 
 /* ===================================================================
-   SETTINGS（現場・作業者・原価）
+   SETTINGS
 =================================================================== */
 async function renderSettings(){
   $("setInsurance").value=state.settings.insurance_rate;
@@ -869,8 +956,8 @@ async function renderSettings(){
 }
 function renderSites(){
   const body=$("sitesBody");
-  if(state.sites.length===0){ body.innerHTML=emptyHTML("🏗","現場が未登録です"); return; }
-  let h=`<div class="card" style="padding:8px var(--pad)">`;
+  if(state.sites.length===0){ body.innerHTML=emptyHTML("building","現場が未登録です"); return; }
+  let h=`<div class="panel" style="padding:8px var(--pad)">`;
   for(const s of state.sites){
     h+=`<div class="line-item"><div class="li-main"><div class="li-title">${esc(s.name)}</div>
       <div class="li-sub">人工単価 ${yen(s.unit_price)} ・ 残業 ×${num(s.overtime_mult,1.25)}</div></div>
@@ -882,7 +969,7 @@ function openSiteEditor(site){
   const s=site||{name:"",unit_price:"",overtime_mult:1.25};
   const isEdit=!!(site&&site.id);
   let h=`<div class="modal-grip"></div><div class="modal-h">${isEdit?"現場を編集":"現場を追加"}</div>
-    <div class="field"><label>現場名 <span style="color:var(--loss)">*</span></label><input type="text" class="input" id="seName" value="${esc(s.name)}" placeholder="例：本現場"></div>
+    <div class="field"><label>現場名 <span style="color:var(--rust)">*</span></label><input type="text" class="input" id="seName" value="${esc(s.name)}" placeholder="例：本現場"></div>
     <div class="field"><label>人工単価（1時間あたりの売上）</label><div class="with-suffix"><input type="number" class="input num" id="sePrice" inputmode="numeric" value="${esc(s.unit_price)}" placeholder="例：4000"><span class="sfx">円</span></div></div>
     <div class="field"><label>残業倍率</label><div class="with-suffix"><input type="number" class="input num" id="seOt" inputmode="decimal" step="0.05" value="${esc(s.overtime_mult)}" placeholder="1.25"><span class="sfx">倍</span></div>
       <div class="tiny dim" style="margin-top:6px">人件費の残業計算に使用（売上は平常も残業も人工単価のまま）</div></div>
@@ -904,8 +991,8 @@ async function delSite(id){ if(!confirm("この現場を削除しますか？"))
 
 function renderMembers(){
   const body=$("membersBody");
-  if(state.members.length===0){ body.innerHTML=emptyHTML("👷","作業者が未登録です。上のボタンから追加してください"); return; }
-  let h=`<div class="card" style="padding:8px var(--pad)">`;
+  if(state.members.length===0){ body.innerHTML=emptyHTML("people","作業者が未登録です。上のボタンから追加してください"); return; }
+  let h=`<div class="panel" style="padding:8px var(--pad)">`;
   for(const m of state.members){
     const rate=chargeRate(num(m.hourly_wage),m.insured); const inactive=m.active===0; const site=memberSite(m);
     h+=`<div class="line-item" ${inactive?'style="opacity:.5"':''}>
@@ -919,7 +1006,7 @@ function openMemberEditor(member){
   const m=member||{name:"",hourly_wage:"",insured:1,active:1,employment:"parttime",site_id:(state.sites[0]?state.sites[0].id:0)};
   const isEdit=!!(member&&member.id);
   let h=`<div class="modal-grip"></div><div class="modal-h">${isEdit?"作業者を編集":"作業者を追加"}</div>
-    <div class="field"><label>名前 <span style="color:var(--loss)">*</span></label><input type="text" class="input" id="meName" value="${esc(m.name)}" placeholder="例：佐藤"></div>
+    <div class="field"><label>名前 <span style="color:var(--rust)">*</span></label><input type="text" class="input" id="meName" value="${esc(m.name)}" placeholder="例：佐藤"></div>
     <div class="field"><label>時給（手入力・編集可）</label><div class="with-suffix"><input type="number" class="input num" id="meWage" inputmode="numeric" value="${esc(m.hourly_wage)}" placeholder="例：2000"><span class="sfx">円</span></div>
       <div class="tiny dim" style="margin-top:6px">最低賃金の目安：${yen(state.settings.min_wage)}</div></div>
     <div class="field"><label>所属現場（人工単価）</label><select class="select" id="meSite">${state.sites.map(s=>`<option value="${s.id}" ${m.site_id==s.id?"selected":""}>${esc(s.name)}（${yen(s.unit_price)}）</option>`).join("")}</select></div>
