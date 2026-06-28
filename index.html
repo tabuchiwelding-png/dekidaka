@@ -458,6 +458,7 @@ function $(id){ return document.getElementById(id); }
 function num(v,d=0){ const n=Number(v); return isFinite(n)?n:d; }
 function clamp(n,lo,hi){ return Math.max(lo,Math.min(hi,n)); }
 function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function str(v,def=""){ return (v===null||v===undefined) ? def : String(v); }
 function yen(n){ const r=Math.round(num(n)); return (r<0?"-":"")+"¥"+Math.abs(r).toLocaleString("ja-JP"); }
 function pctOf(p,d){ return d>0 ? clamp(p/d*100,-999,999) : 0; }
 function hrs(n){ const v=num(n); return (Math.round(v*100)/100)+"h"; }
