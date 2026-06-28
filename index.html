@@ -286,7 +286,7 @@ input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink);}
   </div>
   <div class="tb-meta">
     <div class="tb-field"><span class="tb-k">NO.</span><span class="tb-v">DKDK-001</span></div>
-    <div class="tb-field"><span class="tb-k">REV</span><span class="tb-v">v<span id="verNum">4</span></span></div>
+    <div class="tb-field"><span class="tb-k">REV</span><span class="tb-v">v<span id="verNum">5</span></span></div>
     <div class="tb-field"><span class="tb-k">通信</span><span class="tb-v"><span class="dot" id="connDot"></span><span id="connText">接続中</span></span></div>
   </div>
 </header>
@@ -314,7 +314,9 @@ input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink);}
 
   <!-- ========== JOBS（案件） ========== -->
   <section class="view" id="view-jobs">
-    <div class="sect-h"><span class="eyebrow">JOBS</span><h2>案件</h2></div>
+    <div class="sect-h"><span class="eyebrow">JOBS</span><h2>案件</h2>
+      <button class="link-btn" style="margin-left:auto" onclick="openMeetingsModal()">
+        <svg class="icon" style="width:15px;height:15px"><use href="#i-clip"/></svg>週次会議ログ</button></div>
     <button class="btn-add" onclick="openJobEditor()"><svg class="icon" style="width:15px;height:15px"><use href="#i-plus"/></svg>新しい案件を登録</button>
     <div id="jobsBody" style="margin-top:var(--gap)"><div class="loading"><span class="spin"></span>読み込み中</div></div>
   </section>
@@ -353,7 +355,7 @@ input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink);}
         <b>粗利</b> ＝ ベース売上 − 人件費 −（材料・外注）。
       </div>
     </div>
-    <div class="app-foot">DEKIDAKA TERMINAL — REV.<span id="verNum2">4</span></div>
+    <div class="app-foot">DEKIDAKA TERMINAL — REV.<span id="verNum2">5</span></div>
   </section>
 
 </main>
@@ -374,9 +376,9 @@ input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink);}
 /* ===================================================================
    CONFIG
 =================================================================== */
-const APP_VERSION = 4;
+const APP_VERSION = 5;
 const API_BASE = "https://dekidaka.tabuchi-welding.workers.dev";
-const CACHE_KEY = "dekidaka_cache_v4";
+const CACHE_KEY = "dekidaka_cache_v5";
 
 /* ===================================================================
    STATE
@@ -608,7 +610,7 @@ function setAttMode(mode){
 async function loadAttData(){
   const r=await api("att.month",{month:state.month});
   state.attData={};
-  for(const a of (r.attendance||[])){ state.attData[a.member_id+"|"+a.work_date]={n:num(a.normal_hours),o:num(a.ot_hours)}; }
+  for(const a of (r.attendance||[])){ state.attData[a.member_id+"|"+a.work_date]={n:num(a.normal_hours),o:num(a.ot_hours),memo:str(a.memo)}; }
 }
 async function renderAtt(){
   updateMonthLabels(); const body=$("attBody"); body.innerHTML=loadingHTML();
@@ -628,12 +630,15 @@ function renderAttDay(){
       <input type="date" class="input" id="attDayDate" value="${d}" min="${dateStr(state.month,1)}" max="${dateStr(state.month,daysInMonth(state.month))}" onchange="onAttDayDate()"></div>
     <div class="att-name-row" style="border-bottom:1px solid var(--line)"><div class="nm dim tiny" style="font-weight:700">作業者</div><div class="dim tiny" style="text-align:center;font-weight:700">平常</div><div class="dim tiny" style="text-align:center;font-weight:700">時間外</div></div>`;
   for(const m of activeMembers()){
-    const k=m.id+"|"+d; const v=state.attData[k]||{n:"",o:""};
-    h+=`<div class="att-name-row">
-      <div class="nm">${esc(m.name)}</div>
+    const k=m.id+"|"+d; const v=state.attData[k]||{n:"",o:"",memo:""};
+    h+=`<div class="att-name-row" style="align-items:start">
+      <div class="nm" style="padding-top:9px">${esc(m.name)}</div>
       <input type="number" inputmode="decimal" step="0.25" min="0" max="24" class="att-cell" data-m="${m.id}" data-f="n" value="${v.n===0?'':esc(v.n)}" placeholder="0">
       <input type="number" inputmode="decimal" step="0.25" min="0" max="24" class="att-cell ot" data-m="${m.id}" data-f="o" value="${v.o===0?'':esc(v.o)}" placeholder="0">
-    </div>`;
+    </div>
+    <details style="margin:-4px 0 8px"><summary class="tiny dim" style="cursor:pointer;padding:2px 0">${v.memo?"📝 メモあり（タップで編集）":"＋ メモを書く"}</summary>
+      <textarea class="textarea att-memo" data-m="${m.id}" rows="2" placeholder="今日の作業内容・気づき" style="margin-top:6px;font-size:13px">${esc(v.memo)}</textarea>
+    </details>`;
   }
   h+=`<button class="btn btn-primary btn-block" id="attDaySave" style="margin-top:16px" onclick="saveAttDay()">この日を保存</button>
     <div class="tiny dim" style="margin-top:10px">空欄＝記録なし。後から修正できます。</div></div>`;
@@ -643,9 +648,12 @@ function onAttDayDate(){ state._attDay=$("attDayDate").value; renderAttDay(); }
 async function saveAttDay(){
   const d=$("attDayDate").value; const map={};
   document.querySelectorAll('#attBody .att-cell').forEach(inp=>{
-    const id=inp.dataset.m, f=inp.dataset.f; map[id]=map[id]||{n:0,o:0}; map[id][f]=clamp(num(inp.value),0,24);
+    const id=inp.dataset.m, f=inp.dataset.f; map[id]=map[id]||{n:0,o:0,memo:""}; map[id][f]=clamp(num(inp.value),0,24);
   });
-  const rows=Object.keys(map).map(id=>({member_id:Number(id),work_date:d,normal_hours:map[id].n,ot_hours:map[id].o}));
+  document.querySelectorAll('#attBody .att-memo').forEach(ta=>{
+    const id=ta.dataset.m; map[id]=map[id]||{n:0,o:0,memo:""}; map[id].memo=ta.value.trim();
+  });
+  const rows=Object.keys(map).map(id=>({member_id:Number(id),work_date:d,normal_hours:map[id].n,ot_hours:map[id].o,memo:map[id].memo}));
   const btn=$("attDaySave"); btn.disabled=true; btn.textContent="保存中…";
   try{ const r=await api("att.saveBulk",{rows}); toast(`${d} を保存（${r.saved}件）`,"ok"); await loadAttData(); }
   catch(e){ toast(e.message,"err"); }
@@ -787,10 +795,11 @@ function renderJobs(){
 }
 async function openJobDetail(id){
   state.currentJobId=id; openModalRaw(loadingHTML("案件を読み込み中"));
-  try{ const r=await api("jobs.get",{id}); renderJobDetail(r.job,r.tasks||[],r.logs||[]); }
+  try{ const r=await api("jobs.get",{id}); renderJobDetail(r.job,r.tasks||[],r.logs||[],r.statusLog||[]); }
   catch(e){ openModalRaw(`<div class="empty"><svg class="icon" style="color:var(--rust)"><use href="#i-warn"/></svg><div class="et">${esc(e.message)}</div></div>`); }
 }
-function renderJobDetail(job,tasks,logs){
+function renderJobDetail(job,tasks,logs,statusLog){
+  statusLog = statusLog || [];
   const c=calcJob(job,logs); const pcls=c.profit>=0?"pos":"neg";
   let h=`<div class="modal-grip"></div>
     <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:6px"><div class="modal-h" style="flex:1;margin:0">${esc(job.name)}</div>${statusBadge(job.status)}</div>`;
@@ -814,8 +823,15 @@ function renderJobDetail(job,tasks,logs){
   h+=`<div class="panel" style="margin-top:var(--gap)"><div class="sect-h"><span class="eyebrow">PROCESS</span><h2>工程</h2></div>`;
   if(tasks.length===0){ h+=`<div class="tiny dim" style="padding:6px 0 12px">工程は未登録です</div>`; }
   else{ const byT={}; for(const l of logs){ if(l.task_id) byT[l.task_id]=(byT[l.task_id]||0)+num(l.hours); }
-    for(const t of tasks){ h+=`<div class="line-item"><div class="li-main"><div class="li-title">${esc(t.name)}</div><div class="li-sub">予定 ${hrs(t.planned_hours)} ／ 実績 ${hrs(byT[t.id]||0)}</div></div></div>`; } }
+    for(const t of tasks){ h+=`<div class="line-item"><div class="li-main"><div class="li-title">${esc(t.name)} ${taskStatusBadge(t.status)}</div><div class="li-sub">予定 ${hrs(t.planned_hours)} ／ 実績 ${hrs(byT[t.id]||0)}</div></div></div>`; } }
   h+=`<button class="btn-add btn-sm" style="margin-top:8px" onclick="openTaskEditor(${job.id})"><svg class="icon" style="width:14px;height:14px"><use href="#i-plus"/></svg>工程を編集</button></div>`;
+  h+=`<div class="panel"><div class="sect-h"><span class="eyebrow">HISTORY</span><h2>進捗の履歴</h2></div>`;
+  if(statusLog.length===0){ h+=`<div class="tiny dim" style="padding:6px 0">まだ更新履歴がありません</div>`; }
+  else{ for(const s of statusLog.slice(0,20)){
+    const d=new Date(s.changed_at); const ds=d.getFullYear()+"/"+String(d.getMonth()+1).padStart(2,"0")+"/"+String(d.getDate()).padStart(2,"0");
+    h+=`<div class="line-item"><div class="li-main"><div class="li-title">${esc(s.task_name)} ${taskStatusBadge(s.status)}</div><div class="li-sub">${ds}${s.note?" ・ "+esc(s.note):""}</div></div></div>`; }
+    if(statusLog.length>20) h+=`<div class="tiny dim" style="margin-top:8px">直近20件を表示</div>`; }
+  h+=`</div>`;
   h+=`<div class="panel"><div class="sect-h"><span class="eyebrow">LOG</span><h2>作業記録（${logs.length}件）</h2></div>`;
   if(logs.length===0){ h+=`<div class="tiny dim" style="padding:6px 0">まだ記録がありません</div>`; }
   else{ for(const l of logs.slice(0,30)){ const m=state.membersMap[l.member_id]; const w=m?num(m.hourly_wage):0;
@@ -826,6 +842,67 @@ function renderJobDetail(job,tasks,logs){
     <button class="btn btn-ghost btn-block" style="margin-top:10px" onclick="closeModal()">閉じる</button>`;
   $("modalBox").innerHTML=h;
 }
+/* ===================================================================
+   MEETING LOGS（週次会議ログ・議事録アーカイブ）
+=================================================================== */
+let _meetingsCache=[];
+async function openMeetingsModal(){
+  openModalRaw(loadingHTML("会議ログを読み込み中"));
+  try{ const r=await api("meetings.list",{limit:100}); _meetingsCache=r.meetings||[]; renderMeetingsModal(); }
+  catch(e){ openModalRaw(`<div class="empty"><svg class="icon" style="color:var(--rust)"><use href="#i-warn"/></svg><div class="et">${esc(e.message)}</div></div>`); }
+}
+function renderMeetingsModal(filter){
+  filter=(filter||"").trim();
+  let h=`<div class="modal-grip"></div><div class="modal-h">週次会議ログ</div>
+    <input type="text" class="input" id="meetSearch" placeholder="キーワードで検索" value="${esc(filter)}" oninput="onMeetingSearch(this.value)" style="margin-bottom:14px">
+    <button class="btn-add" style="margin-bottom:14px" onclick="openMeetingEditor()"><svg class="icon" style="width:14px;height:14px"><use href="#i-plus"/></svg>新しい会議ログを追加</button>
+    <div id="meetList"></div>
+    <button class="btn btn-ghost btn-block" style="margin-top:10px" onclick="closeModal()">閉じる</button>`;
+  openModalRaw(h);
+  renderMeetingsList(filter);
+}
+function onMeetingSearch(v){ renderMeetingsList(v); }
+function renderMeetingsList(filter){
+  filter=(filter||"").toLowerCase();
+  const list=_meetingsCache.filter(m=> !filter || (m.title+m.body).toLowerCase().includes(filter));
+  const box=$("meetList");
+  if(!box) return;
+  if(list.length===0){ box.innerHTML=emptyHTML("clip",filter?"該当する会議ログがありません":"まだ会議ログがありません"); return; }
+  let h="";
+  for(const m of list){
+    const preview=(m.body||"").replace(/\n/g," ").slice(0,60);
+    h+=`<div class="line-item" style="cursor:pointer" onclick='openMeetingEditor(${JSON.stringify(m).replace(/'/g,"&#39;")})'>
+      <div class="li-main"><div class="li-title">${esc(m.meeting_date)}${m.title?" ・ "+esc(m.title):""}</div>
+        <div class="li-sub">${esc(preview)}${(m.body||"").length>60?"…":""}</div></div></div>`;
+  }
+  box.innerHTML=h;
+}
+function openMeetingEditor(meeting){
+  const m=meeting||{meeting_date:todayStr(),title:"",body:""};
+  const isEdit=!!(meeting&&meeting.id);
+  let h=`<div class="modal-grip"></div><div class="modal-h">${isEdit?"会議ログを編集":"新しい会議ログ"}</div>
+    <div class="field"><label>日付</label><input type="date" class="input" id="meetDate" value="${esc(m.meeting_date)}"></div>
+    <div class="field"><label>タイトル（任意）</label><input type="text" class="input" id="meetTitle" value="${esc(m.title)}" placeholder="例：週間生産工程会議"></div>
+    <div class="field"><label>内容</label><textarea class="textarea" id="meetBody" rows="10" placeholder="会議メモを貼り付け">${esc(m.body)}</textarea></div>
+    <button class="btn btn-primary btn-block" id="meetSave" onclick="saveMeeting(${isEdit?m.id:'null'})">${isEdit?"更新する":"保存する"}</button>`;
+  if(isEdit) h+=`<button class="btn btn-danger btn-block" style="margin-top:10px" onclick="deleteMeeting(${m.id})">削除</button>`;
+  h+=`<button class="btn btn-ghost btn-block" style="margin-top:10px" onclick="openMeetingsModal()">戻る</button>`;
+  openModalRaw(h);
+}
+async function saveMeeting(id){
+  const meeting_date=$("meetDate").value; const title=$("meetTitle").value.trim(); const body=$("meetBody").value.trim();
+  if(!meeting_date){ toast("日付を入れてください","err"); return; }
+  if(!body){ toast("内容を入れてください","err"); return; }
+  const btn=$("meetSave"); btn.disabled=true; btn.textContent="保存中…";
+  try{ await api("meetings.save",{id,meeting_date,title,body}); toast(id?"更新しました":"保存しました","ok"); const r=await api("meetings.list",{limit:100}); _meetingsCache=r.meetings||[]; renderMeetingsModal(); }
+  catch(e){ toast(e.message,"err"); btn.disabled=false; btn.textContent=id?"更新する":"保存する"; }
+}
+async function deleteMeeting(id){
+  if(!confirm("この会議ログを削除しますか？")) return;
+  try{ await api("meetings.delete",{id}); toast("削除しました","ok"); const r=await api("meetings.list",{limit:100}); _meetingsCache=r.meetings||[]; renderMeetingsModal(); }
+  catch(e){ toast(e.message,"err"); }
+}
+
 function openJobEditor(job){
   const j=job||{name:"",client:"",amount_excl:"",tax_rate:state.settings.default_tax_rate,material_cost:"",outsource_cost:"",status:"progress",due_date:"",note:""};
   const isEdit=!!(job&&job.id);
@@ -885,21 +962,33 @@ async function openTaskEditor(jobId){
 }
 function renderTaskEditor(jobId,tasks){
   let h=`<div class="modal-grip"></div><div class="modal-h">工程の編集</div>
-    <div class="note" style="margin-bottom:14px">工程名と予定工数を入力。行を空にして保存するとその工程は削除（作業記録がある工程は残ります）。</div><div id="taskRows">`;
-  const list=tasks.length?tasks:[{name:"",planned_hours:""}];
+    <div class="note" style="margin-bottom:14px">工程名・予定工数・状態を入力。状態を変える時に下のメモへ一言書くと、進捗履歴に残ります。行を空にして保存するとその工程は削除（作業記録がある工程は残ります）。</div><div id="taskRows">`;
+  const list=tasks.length?tasks:[{name:"",planned_hours:"",status:"todo"}];
   for(const t of list) h+=taskRowHTML(t);
   h+=`</div><button class="btn-add btn-sm" onclick="addTaskRow()"><svg class="icon" style="width:14px;height:14px"><use href="#i-plus"/></svg>行を追加</button>
     <button class="btn btn-primary btn-block" id="tkSave" style="margin-top:14px" onclick="saveTasks(${jobId})">工程を保存</button>
     <button class="btn btn-ghost btn-block" style="margin-top:10px" onclick="openJobDetail(${jobId})">戻る</button>`;
   openModalRaw(h);
 }
-function taskRowHTML(t){ return `<div class="task-row" data-id="${t.id||''}" style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
-  <input type="text" class="input tk-name" value="${esc(t.name||'')}" placeholder="工程名（例：溶接）" style="flex:2">
-  <div class="with-suffix" style="flex:1"><input type="number" class="input num tk-ph" inputmode="decimal" value="${esc(t.planned_hours||'')}" placeholder="予定" step="0.5" style="padding-right:34px"><span class="sfx">h</span></div></div>`; }
+const TASK_STATUS={todo:{label:"未着手",cls:"bd-estimate"},doing:{label:"加工中",cls:"bd-progress"},done:{label:"完了",cls:"bd-done"}};
+function taskStatusBadge(s){ const x=TASK_STATUS[s]||TASK_STATUS.todo; return `<span class="badge ${x.cls}">${x.label}</span>`; }
+function taskRowHTML(t){ const st=t.status||"todo"; return `<div class="task-row" data-id="${t.id||''}" style="margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--line-soft)">
+  <div style="display:flex;gap:8px;margin-bottom:8px">
+    <input type="text" class="input tk-name" value="${esc(t.name||'')}" placeholder="工程名（例：端面加工）" style="flex:2">
+    <div class="with-suffix" style="flex:1"><input type="number" class="input num tk-ph" inputmode="decimal" value="${esc(t.planned_hours||'')}" placeholder="予定" step="0.5" style="padding-right:34px"><span class="sfx">h</span></div>
+  </div>
+  <div style="display:flex;gap:8px">
+    <select class="select tk-status" style="flex:1">
+      ${Object.entries(TASK_STATUS).map(([k,v])=>`<option value="${k}" ${st===k?"selected":""}>${v.label}</option>`).join("")}
+    </select>
+    <input type="text" class="input tk-note" placeholder="状態メモ（任意・例：F-5,F-6完了）" style="flex:2">
+  </div></div>`; }
 function addTaskRow(){ $("taskRows").insertAdjacentHTML("beforeend",taskRowHTML({})); }
 async function saveTasks(jobId){
   const rows=[...document.querySelectorAll("#taskRows .task-row")];
-  const tasks=rows.map(r=>{ const id=r.dataset.id; const name=r.querySelector(".tk-name").value.trim(); const ph=num(r.querySelector(".tk-ph").value); const o={name,planned_hours:ph}; if(id) o.id=Number(id); return o; }).filter(t=>t.name);
+  const tasks=rows.map(r=>{ const id=r.dataset.id; const name=r.querySelector(".tk-name").value.trim(); const ph=num(r.querySelector(".tk-ph").value);
+    const status=r.querySelector(".tk-status").value; const note=r.querySelector(".tk-note").value.trim();
+    const o={name,planned_hours:ph,status,note}; if(id) o.id=Number(id); return o; }).filter(t=>t.name);
   const btn=$("tkSave"); btn.disabled=true; btn.textContent="保存中…";
   try{ await api("tasks.save",{job_id:jobId,tasks}); toast("工程を保存しました","ok"); openJobDetail(jobId); }
   catch(e){ toast(e.message,"err"); btn.disabled=false; btn.textContent="工程を保存"; }
